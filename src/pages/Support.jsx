@@ -1,343 +1,338 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import { useApp } from '../contexts/AppContext';
+import { UiIcon } from '../components/SportIcons';
+import {
+    CATEGORIES, FAQS, PRIORITIES, closeTicket, createTicket, formatWhen,
+    listTickets, reopenTicket, replyToTicket,
+} from '../services/supportTickets';
 
-const API = `${import.meta.env.VITE_API_BASE || ''}/api`;
+const EMAIL_KEY = 'afribet_support_email';
 
-// ── SVG Icons ────────────────────────────────────────────────────────────────
-const TicketIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>;
-const PlusIcon = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>;
-const BackIcon = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>;
-const SearchIcon = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
-const SendIcon = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>;
-const RefreshIcon = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
-
-const STATUS_COLORS = {
-    open: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-    pending: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-    in_progress: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
-    resolved: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-    closed: 'bg-slate-100 text-slate-600 dark:bg-white/[.06] dark:text-slate-400',
-};
-const PRIORITY_COLORS = {
-    low: 'bg-slate-100 text-slate-600 dark:bg-white/[.06] dark:text-slate-400',
-    medium: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-    high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
-    urgent: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+const STATUS_TONE = {
+    open: 'bg-[#14392f] text-[#39f5ad] border-[#39f5ad]/35',
+    closed: 'bg-[#2a1420] text-[#ff8fa3] border-[#ff8fa3]/30',
+    resolved: 'bg-[#102653] text-[#8ab1f1] border-[#3d5480]',
 };
 
-export default function SupportPage() {
+const PRIORITY_TONE = {
+    low: 'bg-[#12233f] text-[#8ab1f1]',
+    medium: 'bg-[#102653] text-[#7fb3ff]',
+    high: 'bg-[#33260c] text-[#ffb400]',
+    urgent: 'bg-[#3a1220] text-[#ff6b85]',
+};
+
+const CHANNELS = [
+    { icon: 'live', title: 'Live chat', detail: 'Average wait under 2 minutes', meta: '24/7' },
+    { icon: 'results', title: 'Email us', detail: 'support@afribet.com', meta: 'Replies in ~2h' },
+    { icon: 'signal', title: 'Call centre', detail: '+234 700 AFRIBET', meta: '08:00 – 23:00' },
+];
+
+function Field({ label, children }) {
+    return (
+        <label className="block">
+            <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[#7ea9ec]">{label}</span>
+            {children}
+        </label>
+    );
+}
+
+const inputClass = 'w-full rounded-[10px] border border-[#25375a] bg-[#071328] px-3 py-2.5 text-[14px] text-white outline-none transition placeholder:text-[#4d6b91] focus:border-[#39f5ad] focus:ring-2 focus:ring-[#39f5ad]/25';
+
+function StatusPill({ status }) {
+    return <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_TONE[status] ?? STATUS_TONE.open}`}>{status}</span>;
+}
+
+function FaqList() {
+    const [open, setOpen] = useState(null);
+    return (
+        <div className="space-y-2">
+            {FAQS.map((faq, index) => {
+                const expanded = open === index;
+                return (
+                    <div className="animate-fade-up overflow-hidden rounded-[12px] border border-[#22314c] bg-[#071226] transition hover:border-[#39f5ad]/25" style={{ animationDelay: `${index * 40}ms` }} key={faq.q}>
+                        <button
+                            className="flex w-full items-center gap-3 border-0 bg-transparent px-4 py-3.5 text-left text-[13px] font-bold text-white"
+                            onClick={() => setOpen(expanded ? null : index)}
+                            type="button"
+                            aria-expanded={expanded}
+                        >
+                            <span className="min-w-0 flex-1">{faq.q}</span>
+                            <UiIcon name="chevronDown" className={`size-4 shrink-0 text-[#7ea9ec] transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} />
+                        </button>
+                        <div className={`grid transition-all duration-300 ease-out ${expanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden"><p className="m-0 px-4 pb-4 text-[13px] leading-relaxed text-[#9fbce6]">{faq.a}</p></div>
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+export default function Support() {
     const { user } = useAuth();
-    const [view, setView] = useState('list'); // list | new | detail
-    // If user is authenticated, use their email directly
+    const { setPage } = useApp();
+    const toast = useToast();
+
     const [email, setEmail] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('support_email') || '';
-        }
-        return '';
+        try { return user?.email || localStorage.getItem(EMAIL_KEY) || ''; } catch { return user?.email || ''; }
     });
     const [emailInput, setEmailInput] = useState('');
+    const [view, setView] = useState('list');
     const [tickets, setTickets] = useState([]);
-    const [selected, setSelected] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState('');
-    const [error, setError] = useState('');
-    const [replyText, setReplyText] = useState('');
+    const [selectedId, setSelectedId] = useState(null);
+    const [reply, setReply] = useState('');
     const [form, setForm] = useState({ name: '', email: '', subject: '', description: '', category: 'general', priority: 'medium' });
 
-    // Auto-set email from authenticated user
     useEffect(() => {
-        if (user?.email) {
-            setEmail(user.email);
-            localStorage.setItem('support_email', user.email);
-            setForm(f => ({ ...f, name: f.name || user.name || '', email: user.email }));
-        }
+        if (!user?.email) return;
+        setEmail(user.email);
+        try { localStorage.setItem(EMAIL_KEY, user.email); } catch { /* ignore */ }
+        setForm((current) => ({ ...current, name: current.name || user.name || '', email: user.email }));
     }, [user]);
 
-    useEffect(() => { if (email) fetchTickets(); }, [email]);
+    useEffect(() => { setTickets(listTickets(email)); }, [email]);
 
-    async function fetchTickets() {
-        if (!email) return;
-        setLoading(true);
-        try {
-            const r = await fetch(`${API}/tickets?email=${encodeURIComponent(email)}`, { headers: { 'Accept': 'application/json' } });
-            const d = await r.json();
-            setTickets(d.tickets || []);
-        } catch { setError('Failed to load tickets'); }
-        setLoading(false);
-    }
+    const selected = useMemo(() => tickets.find((ticket) => ticket.id === selectedId) ?? null, [tickets, selectedId]);
+    const openCount = tickets.filter((ticket) => ticket.status === 'open').length;
 
-    async function loadTicket(number) {
-        setLoading(true);
-        try {
-            const r = await fetch(`${API}/tickets/${number}?email=${encodeURIComponent(email)}`, { headers: { 'Accept': 'application/json' } });
-            const d = await r.json();
-            setSelected(d.ticket);
-            setView('detail');
-        } catch { setError('Failed to load ticket'); }
-        setLoading(false);
-    }
+    const refresh = (nextEmail = email) => setTickets(listTickets(nextEmail));
 
-    async function submitTicket(e) {
-        e.preventDefault();
-        setLoading(true); setError('');
-        try {
-            const r = await fetch(`${API}/tickets`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(form),
-            });
-            const d = await r.json();
-            if (!r.ok) { setError(Object.values(d.errors || {})[0]?.[0] || 'Error'); setLoading(false); return; }
-            setSuccess(d.message);
-            localStorage.setItem('support_email', form.email);
-            setEmail(form.email);
-            setForm({ name: '', email: '', subject: '', description: '', category: 'general', priority: 'medium' });
-            setTimeout(() => { setSuccess(''); setView('list'); }, 3000);
-        } catch { setError('Submission failed'); }
-        setLoading(false);
-    }
+    const submitTicket = (fromEvent) => {
+        fromEvent.preventDefault();
+        const created = createTicket(form);
+        try { localStorage.setItem(EMAIL_KEY, form.email); } catch { /* ignore */ }
+        setEmail(form.email);
+        refresh(form.email);
+        setForm((current) => ({ ...current, subject: '', description: '', category: 'general', priority: 'medium' }));
+        setSelectedId(created.id);
+        setView('detail');
+        toast?.success?.(`Ticket ${created.number} created`, { title: 'Support' });
+    };
 
-    async function submitReply(e) {
-        e.preventDefault();
-        if (!replyText.trim()) return;
-        setLoading(true);
-        try {
-            await fetch(`${API}/tickets/${selected.ticket_number}/reply`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({ email, message: replyText }),
-            });
-            setReplyText('');
-            await loadTicket(selected.ticket_number);
-        } catch { setError('Failed to send reply'); }
-        setLoading(false);
-    }
+    const submitReply = (fromEvent) => {
+        fromEvent.preventDefault();
+        if (!reply.trim()) return;
+        replyToTicket(selected.id, reply.trim(), user?.name || selected.name);
+        setReply('');
+        refresh();
+        toast?.success?.('Reply sent', { title: 'Support' });
+    };
 
-    const enterEmail = (e) => {
-        e.preventDefault();
+    const identify = (fromEvent) => {
+        fromEvent.preventDefault();
         if (!emailInput.includes('@')) return;
-        localStorage.setItem('support_email', emailInput);
+        try { localStorage.setItem(EMAIL_KEY, emailInput); } catch { /* ignore */ }
         setEmail(emailInput);
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-ink pt-4 pb-16">
-            <div className="max-w-3xl mx-auto px-4">
-
-                {/* Header */}
-                <div className="mb-6 flex items-center justify-between">
+        <div className="min-h-screen bg-[#030810] pb-12 text-white">
+            <header className="relative overflow-hidden border-b border-[#22314c] bg-gradient-to-b from-[#0b1c38] to-[#071226] px-4 py-7 sm:px-6">
+                <div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-[#39f5ad]/10 blur-[80px]" aria-hidden="true" />
+                <div className="relative mx-auto max-w-4xl">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
-                            <TicketIcon />
+                        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#12233f] text-[#39f5ad] shadow-[0_0_28px_rgba(57,245,173,.15)]"><UiIcon name="headset" className="size-6" /></span>
+                        <div className="min-w-0">
+                            <h1 className="m-0 text-[22px] font-black tracking-tight sm:text-[26px]">Support centre</h1>
+                            <p className="m-0 text-[13px] text-[#7ea9ec]">Real answers, fast — 24 hours a day.</p>
                         </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Support Center</h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">We're here to help</p>
-                        </div>
+                        {openCount > 0 ? <span className="ml-auto hidden animate-scale-in rounded-full border border-[#39f5ad]/35 bg-[#14392f] px-3 py-1.5 text-[11px] font-bold text-[#39f5ad] sm:block">{openCount} open</span> : null}
                     </div>
-                    {view !== 'new' && (
-                        <button onClick={() => setView('new')}
-                            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors">
-                            <PlusIcon /> New Ticket
-                        </button>
-                    )}
+
+                    <div className="mt-5 grid gap-2 sm:grid-cols-3">
+                        {CHANNELS.map((channel, index) => (
+                            <div className="animate-fade-up flex items-center gap-3 rounded-[12px] border border-[#22314c] bg-[#071226]/80 p-3 transition hover:-translate-y-0.5 hover:border-[#39f5ad]/30" style={{ animationDelay: `${index * 70}ms` }} key={channel.title}>
+                                <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-[#12233f] text-[#39f5ad]"><UiIcon name={channel.icon} className="size-5" /></span>
+                                <div className="min-w-0">
+                                    <b className="block truncate text-[13px]">{channel.title}</b>
+                                    <span className="block truncate text-[11px] text-[#7ea9ec]">{channel.detail}</span>
+                                </div>
+                                <span className="ml-auto shrink-0 text-[10px] font-bold text-[#39f5ad]">{channel.meta}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
+            </header>
 
-                {/* Alerts */}
-                {success && <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl text-green-700 dark:text-green-300 text-sm">{success}</div>}
-                {error && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm">{error}<button className="ml-2 underline" onClick={() => setError('')}>Dismiss</button></div>}
+            <div className="mx-auto max-w-4xl px-4 sm:px-6">
+                <nav className="no-scrollbar sticky top-[61px] z-20 -mx-4 flex gap-1.5 overflow-x-auto bg-[#030810]/95 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6 xl:top-[74px]" aria-label="Support views">
+                    {[['list', 'My tickets'], ['new', 'New ticket'], ['faq', 'FAQ']].map(([id, label]) => (
+                        <button
+                            className={`h-9 shrink-0 rounded-[18px] border-0 px-4 text-[12px] font-bold transition active:scale-95 ${view === id ? 'bg-[#39f5ad] text-[#03150e] shadow-[0_0_20px_rgba(57,245,173,.25)]' : 'bg-[#12233f] text-[#bad0f5] hover:bg-[#1a2f52]'}`}
+                            onClick={() => { setView(id); setSelectedId(null); }}
+                            type="button"
+                            aria-pressed={view === id}
+                            key={id}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                    <button className="ml-auto hidden h-9 shrink-0 rounded-[18px] border-0 bg-[#12233f] px-4 text-[12px] font-bold text-[#bad0f5] transition hover:bg-[#1a2f52] sm:block" onClick={() => setPage('legal')} type="button">
+                        Terms &amp; rules
+                    </button>
+                </nav>
 
-                {/* New Ticket Form */}
-                {view === 'new' && (
-                    <div className="bg-white dark:bg-ink-2 rounded-2xl border border-slate-200 dark:border-white/10 p-6">
-                        <div className="flex items-center gap-3 mb-5">
-                            <button onClick={() => setView('list')} className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-slate-500"><BackIcon /></button>
-                            <h2 className="font-semibold text-slate-900 dark:text-white">Submit a Support Request</h2>
+                {view === 'faq' ? (
+                    <section className="pb-6">
+                        <h2 className="mb-3 mt-1 text-[16px] font-black">Frequently asked</h2>
+                        <FaqList />
+                        <div className="animate-fade-up mt-5 rounded-[12px] border border-[#39f5ad]/25 bg-[#0a1b2f] p-4 text-center">
+                            <p className="m-0 text-[13px] text-[#9fbce6]">Still stuck? Open a ticket and a specialist will pick it up.</p>
+                            <button className="mt-3 h-[40px] rounded-[19px] border-0 bg-[#39f5ad] px-5 text-[13px] font-bold text-[#03150e] transition hover:shadow-[0_0_24px_rgba(57,245,173,.3)] active:scale-95" onClick={() => setView('new')} type="button">
+                                Contact support
+                            </button>
                         </div>
-                        <form onSubmit={submitTicket} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Full Name *</label>
-                                    <input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"
-                                        placeholder="John Doe" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Email *</label>
-                                    <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"
-                                        placeholder="john@example.com" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Subject *</label>
-                                <input required value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"
-                                    placeholder="Brief description of your issue" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Category</label>
-                                    <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none">
-                                        <option value="general">General</option>
-                                        <option value="technical">Technical</option>
-                                        <option value="billing">Billing</option>
-                                        <option value="account">Account</option>
-                                        <option value="bonus">Bonus</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Priority</label>
-                                    <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none">
-                                        <option value="low">Low</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="high">High</option>
-                                        <option value="urgent">Urgent</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Description *</label>
-                                <textarea required rows={5} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none resize-none"
-                                    placeholder="Please describe your issue in detail..." />
-                            </div>
-                            <div className="flex gap-3">
-                                <button type="button" onClick={() => setView('list')}
-                                    className="flex-1 py-2.5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-white/10">
-                                    Cancel
-                                </button>
-                                <button type="submit" disabled={loading}
-                                    className="flex-1 py-2.5 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
-                                    {loading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <SendIcon />}
-                                    Submit Ticket
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
+                    </section>
+                ) : null}
 
-                {/* Ticket List */}
-                {view === 'list' && (
-                    <div>
+                {view === 'new' ? (
+                    <form className="animate-fade-up mb-6 space-y-4 rounded-[14px] border border-[#22314c] bg-[#071226] p-4 sm:p-5" onSubmit={submitTicket}>
+                        <h2 className="m-0 text-[16px] font-black">Open a ticket</h2>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <Field label="Full name">
+                                <input className={inputClass} required value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} placeholder="Ada Obi" />
+                            </Field>
+                            <Field label="Email">
+                                <input className={inputClass} required type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} placeholder="you@example.com" />
+                            </Field>
+                        </div>
+                        <Field label="Subject">
+                            <input className={inputClass} required value={form.subject} onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))} placeholder="Short summary of the issue" />
+                        </Field>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <Field label="Category">
+                                <select className={inputClass} value={form.category} onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}>
+                                    {CATEGORIES.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
+                                </select>
+                            </Field>
+                            <Field label="Priority">
+                                <select className={inputClass} value={form.priority} onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value }))}>
+                                    {PRIORITIES.map(([id, label]) => <option value={id} key={id}>{label}</option>)}
+                                </select>
+                            </Field>
+                        </div>
+                        <Field label="Describe the issue">
+                            <textarea className={`${inputClass} resize-none`} required rows={5} value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} placeholder="Include any reference numbers, amounts and times…" />
+                        </Field>
+                        <div className="flex gap-3">
+                            <button className="h-[44px] flex-1 rounded-[12px] border border-[#25375a] bg-transparent text-[14px] font-bold text-[#bad0f5] transition hover:bg-white/5" onClick={() => setView('list')} type="button">Cancel</button>
+                            <button className="h-[44px] flex-1 rounded-[12px] border-0 bg-[#39f5ad] text-[14px] font-bold text-[#03150e] transition hover:shadow-[0_0_24px_rgba(57,245,173,.3)] active:scale-95" type="submit">Submit ticket</button>
+                        </div>
+                    </form>
+                ) : null}
+
+                {view === 'list' ? (
+                    <section className="pb-6">
                         {!email ? (
-                            <div className="bg-white dark:bg-ink-2 rounded-2xl border border-slate-200 dark:border-white/10 p-8 text-center">
-                                <svg className="w-12 h-12 text-violet-300 dark:text-violet-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                <h3 className="font-semibold text-slate-900 dark:text-white mb-1">View your tickets</h3>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Enter your email to view existing tickets</p>
-                                <form onSubmit={enterEmail} className="flex gap-2 max-w-sm mx-auto">
-                                    <input type="email" value={emailInput} onChange={e => setEmailInput(e.target.value)}
-                                        className="flex-1 px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"
-                                        placeholder="your@email.com" />
-                                    <button type="submit" className="px-4 py-2 bg-violet-600 text-white text-sm rounded-lg">
-                                        <SearchIcon />
-                                    </button>
-                                </form>
-                            </div>
-                        ) : (
-                            <div className="bg-white dark:bg-ink-2 rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden">
-                                <div className="px-5 py-3 border-b border-slate-100 dark:border-white/[.07] flex items-center justify-between">
-                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                                        Tickets for <span className="text-slate-900 dark:text-white">{email}</span>
-                                    </span>
-                                    <div className="flex items-center gap-2">
-                                        <button onClick={fetchTickets} disabled={loading} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg">
-                                            <RefreshIcon />
-                                        </button>
-                                        <button onClick={() => { setEmail(''); localStorage.removeItem('support_email'); }} className="text-xs text-slate-400 hover:text-red-500">Change email</button>
-                                    </div>
+                            <form className="animate-fade-up rounded-[14px] border border-[#22314c] bg-[#071226] p-6 text-center" onSubmit={identify}>
+                                <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#12233f] text-[#39f5ad]"><UiIcon name="results" className="size-6" /></span>
+                                <h2 className="mt-3 text-[16px] font-black">Find your tickets</h2>
+                                <p className="mt-1 text-[13px] text-[#7ea9ec]">Enter the email you used when contacting us.</p>
+                                <div className="mx-auto mt-4 flex max-w-sm gap-2">
+                                    <input className={inputClass} type="email" value={emailInput} onChange={(event) => setEmailInput(event.target.value)} placeholder="you@example.com" />
+                                    <button className="grid size-[46px] shrink-0 place-items-center rounded-[10px] border-0 bg-[#39f5ad] text-[#03150e] transition active:scale-90" type="submit" aria-label="Find tickets"><UiIcon name="search" /></button>
                                 </div>
-                                {loading && <div className="flex justify-center py-8"><span className="w-6 h-6 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" /></div>}
-                                {!loading && tickets.length === 0 && (
-                                    <div className="py-12 text-center text-slate-500 dark:text-slate-400 text-sm">
-                                        No tickets found. <button className="text-violet-600 hover:underline" onClick={() => setView('new')}>Submit one now</button>
+                            </form>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-2 py-1 text-[12px] text-[#7ea9ec]">
+                                    <span className="min-w-0 truncate">Tickets for <b className="text-white">{email}</b></span>
+                                    <button className="ml-auto shrink-0 rounded-full bg-[#12233f] px-3 py-1.5 text-[11px] font-bold text-[#bad0f5] transition hover:bg-[#1a2f52]" onClick={() => { setEmail(''); setSelectedId(null); try { localStorage.removeItem(EMAIL_KEY); } catch { /* ignore */ } }} type="button">
+                                        Change email
+                                    </button>
+                                </div>
+
+                                {tickets.length === 0 ? (
+                                    <div className="animate-fade-up mt-2 rounded-[14px] border border-[#22314c] bg-[#071226] py-12 text-center">
+                                        <p className="m-0 text-[13px] text-[#7ea9ec]">No tickets yet.</p>
+                                        <button className="mt-3 h-[40px] rounded-[19px] border-0 bg-[#39f5ad] px-5 text-[13px] font-bold text-[#03150e] transition active:scale-95" onClick={() => setView('new')} type="button">Open your first ticket</button>
+                                    </div>
+                                ) : (
+                                    <div className="mt-2 space-y-2">
+                                        {tickets.map((ticket, index) => (
+                                            <button
+                                                className="animate-fade-up flex w-full items-start gap-3 rounded-[12px] border border-[#22314c] bg-[#071226] p-4 text-left transition hover:-translate-y-0.5 hover:border-[#39f5ad]/30 active:scale-[.99]"
+                                                style={{ animationDelay: `${index * 45}ms` }}
+                                                onClick={() => { setSelectedId(ticket.id); setView('detail'); }}
+                                                type="button"
+                                                key={ticket.id}
+                                            >
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex flex-wrap items-center gap-1.5">
+                                                        <span className="font-mono text-[11px] text-[#5f83b8]">{ticket.number}</span>
+                                                        <StatusPill status={ticket.status} />
+                                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${PRIORITY_TONE[ticket.priority]}`}>{ticket.priority}</span>
+                                                    </div>
+                                                    <p className="m-0 mt-1.5 truncate text-[14px] font-bold">{ticket.subject}</p>
+                                                    <p className="m-0 mt-0.5 text-[11px] text-[#7ea9ec]">{ticket.replies.length} replies • {formatWhen(ticket.updatedAt)}</p>
+                                                </div>
+                                                <UiIcon name="chevronRight" className="mt-1 size-4 shrink-0 text-[#3d5480]" />
+                                            </button>
+                                        ))}
                                     </div>
                                 )}
-                                {tickets.map(t => (
-                                    <button key={t.id} onClick={() => loadTicket(t.ticket_number)}
-                                        className="w-full text-left px-5 py-4 border-b last:border-b-0 border-slate-100 dark:border-white/[.07] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-xs font-mono text-slate-400">{t.ticket_number}</span>
-                                                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[t.status] || 'bg-slate-100 text-slate-600'}`}>{t.status.replace('_', ' ')}</span>
-                                                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${PRIORITY_COLORS[t.priority] || ''}`}>{t.priority}</span>
-                                                </div>
-                                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{t.subject}</p>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t.replies_count} replies • {t.updated_at}</p>
-                                            </div>
-                                            <svg className="w-4 h-4 text-slate-300 dark:text-slate-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                            </>
                         )}
-                    </div>
-                )}
+                    </section>
+                ) : null}
 
-                {/* Ticket Detail */}
-                {view === 'detail' && selected && (
-                    <div className="space-y-4">
-                        <div className="bg-white dark:bg-ink-2 rounded-2xl border border-slate-200 dark:border-white/10 p-5">
-                            <div className="flex items-center gap-3 mb-4">
-                                <button onClick={() => setView('list')} className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg text-slate-500"><BackIcon /></button>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <span className="text-xs font-mono text-slate-400">{selected.ticket_number}</span>
-                                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[selected.status]}`}>{selected.status.replace('_', ' ')}</span>
-                                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${PRIORITY_COLORS[selected.priority]}`}>{selected.priority}</span>
-                                        <span className="text-xs text-slate-400 capitalize">{selected.category}</span>
-                                    </div>
-                                    <h2 className="font-semibold text-slate-900 dark:text-white mt-0.5">{selected.subject}</h2>
+                {view === 'detail' && selected ? (
+                    <section className="animate-fade-up mb-6 rounded-[14px] border border-[#22314c] bg-[#071226] p-4 sm:p-5">
+                        <div className="flex items-start gap-3">
+                            <button className="grid size-9 shrink-0 place-items-center rounded-[10px] border-0 bg-[#12233f] text-white transition hover:text-[#39f5ad] active:scale-90" onClick={() => { setView('list'); setSelectedId(null); }} type="button" aria-label="Back to tickets">
+                                <UiIcon name="chevronRight" className="size-5 rotate-180" />
+                            </button>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                    <span className="font-mono text-[11px] text-[#5f83b8]">{selected.number}</span>
+                                    <StatusPill status={selected.status} />
+                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${PRIORITY_TONE[selected.priority]}`}>{selected.priority}</span>
                                 </div>
+                                <h2 className="m-0 mt-1 text-[16px] font-black">{selected.subject}</h2>
                             </div>
-
-                            {/* Original description */}
-                            <div className="bg-slate-50 dark:bg-white/[.06]/50 rounded-xl p-4 mb-4">
-                                <p className="text-xs text-slate-400 mb-1">Original request • {selected.created_at}</p>
-                                <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{selected.description}</p>
-                            </div>
-
-                            {/* Replies */}
-                            <div className="space-y-3">
-                                {selected.replies?.map((r, i) => (
-                                    <div key={i} className={`rounded-xl p-4 ${r.is_staff ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800' : 'bg-slate-50 dark:bg-white/[.06]/50'}`}>
-                                        <div className="flex items-center gap-2 mb-1.5">
-                                            {r.is_staff ? (
-                                                <span className="flex items-center gap-1 text-xs font-semibold text-violet-700 dark:text-violet-300">
-                                                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                                                    {r.author}
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{r.author}</span>
-                                            )}
-                                            <span className="text-xs text-slate-400">{r.created_at}</span>
-                                        </div>
-                                        <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{r.message}</p>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Reply form */}
-                            {!['closed'].includes(selected.status) && (
-                                <form onSubmit={submitReply} className="mt-4 space-y-3">
-                                    <textarea required rows={3} value={replyText} onChange={e => setReplyText(e.target.value)}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-xl bg-slate-50 dark:bg-white/[.06] dark:text-white focus:ring-2 focus:ring-violet-500 outline-none resize-none"
-                                        placeholder="Add a reply..." />
-                                    <button type="submit" disabled={loading}
-                                        className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl">
-                                        {loading ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <SendIcon />}
-                                        Send Reply
-                                    </button>
-                                </form>
-                            )}
                         </div>
-                    </div>
-                )}
+
+                        <div className="mt-4 rounded-[12px] bg-[#0b1930] p-4">
+                            <p className="m-0 text-[11px] text-[#5f83b8]">Original request • {formatWhen(selected.createdAt)}</p>
+                            <p className="m-0 mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-[#cfe0f7]">{selected.description}</p>
+                        </div>
+
+                        <div className="mt-3 space-y-2.5">
+                            {selected.replies.map((entry, index) => (
+                                <div
+                                    className={`animate-fade-up rounded-[12px] p-4 ${entry.staff ? 'border border-[#39f5ad]/25 bg-[#0a1f1a]' : 'bg-[#0b1930]'}`}
+                                    style={{ animationDelay: `${index * 50}ms` }}
+                                    key={entry.id}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        {entry.staff ? <span className="text-[#39f5ad]"><UiIcon name="starFilled" className="size-3.5" /></span> : null}
+                                        <b className={`text-[12px] ${entry.staff ? 'text-[#39f5ad]' : 'text-white'}`}>{entry.author}</b>
+                                        <span className="ml-auto text-[11px] text-[#5f83b8]">{formatWhen(entry.createdAt)}</span>
+                                    </div>
+                                    <p className="m-0 mt-1.5 whitespace-pre-wrap text-[13px] leading-relaxed text-[#cfe0f7]">{entry.message}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {selected.status === 'closed' ? (
+                            <div className="mt-4 flex items-center gap-3 rounded-[12px] border border-[#25375a] bg-[#0b1930] p-4">
+                                <p className="m-0 flex-1 text-[13px] text-[#7ea9ec]">This ticket is closed.</p>
+                                <button className="h-[38px] shrink-0 rounded-[10px] border-0 bg-[#39f5ad] px-4 text-[13px] font-bold text-[#03150e] transition active:scale-95" onClick={() => { reopenTicket(selected.id); refresh(); }} type="button">Reopen</button>
+                            </div>
+                        ) : (
+                            <form className="mt-4 space-y-3" onSubmit={submitReply}>
+                                <textarea className={`${inputClass} resize-none`} rows={3} value={reply} onChange={(event) => setReply(event.target.value)} placeholder="Add a reply…" />
+                                <div className="flex gap-3">
+                                    <button className="h-[42px] flex-1 rounded-[12px] border border-[#25375a] bg-transparent text-[13px] font-bold text-[#bad0f5] transition hover:bg-white/5" onClick={() => { closeTicket(selected.id); refresh(); }} type="button">Close ticket</button>
+                                    <button className="h-[42px] flex-1 rounded-[12px] border-0 bg-[#39f5ad] text-[13px] font-bold text-[#03150e] transition hover:shadow-[0_0_24px_rgba(57,245,173,.3)] active:scale-95" type="submit">Send reply</button>
+                                </div>
+                            </form>
+                        )}
+                    </section>
+                ) : null}
             </div>
         </div>
     );

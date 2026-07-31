@@ -2,6 +2,7 @@
 import PlatformShell from './components/PlatformShell';
 import Home from './pages/Home';
 import Sports from './pages/Sports';
+import EventDetail from './pages/EventDetail';
 import Casino from './pages/Casino';
 import GamePage from './pages/GamePage';
 import Promotions from './pages/Promotions';
@@ -19,8 +20,9 @@ export default function App() {
     return (
         <PlatformShell>
             <main className="min-h-screen">
-                {page === 'home' && <Home embedded />}
+                {page === 'home' && <Home />}
                 {page === 'sports' && <Sports />}
+                {page === 'event' && <EventDetail />}
                 {page === 'casino' && <Casino />}
                 {page === 'game' && <GamePage />}
                 {page === 'promotions' && <Promotions />}

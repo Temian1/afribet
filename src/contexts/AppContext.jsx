@@ -6,8 +6,9 @@ export const useApp = () => useContext(AppContext);
 
 const PAGE_KEY = 'nb_last_page';
 const GAME_KEY = 'nb_current_game';
+const EVENT_KEY = 'nb_current_event';
 const WALLET_PREFIX = 'afribet_demo_wallet_v1:';
-const VALID_PAGES = new Set(['home', 'sports', 'casino', 'game', 'promotions', 'vip', 'legal', 'wallet', 'referral', 'support', 'profile', 'mybets']);
+const VALID_PAGES = new Set(['home', 'sports', 'event', 'casino', 'game', 'promotions', 'vip', 'legal', 'wallet', 'referral', 'support', 'profile', 'mybets']);
 
 function walletKey(email) {
   return `${WALLET_PREFIX}${email}`;
@@ -38,6 +39,7 @@ export function AppProvider({ children }) {
     return VALID_PAGES.has(saved) ? saved : 'home';
   });
   const [currentGame, setCurrentGame] = useState(() => localStorage.getItem(GAME_KEY));
+  const [currentEvent, setCurrentEvent] = useState(() => localStorage.getItem(EVENT_KEY));
 
   useEffect(() => {
     const wallet = readWallet(user?.email);
@@ -56,6 +58,10 @@ export function AppProvider({ children }) {
     if (currentGame) localStorage.setItem(GAME_KEY, currentGame);
     else localStorage.removeItem(GAME_KEY);
   }, [currentGame]);
+  useEffect(() => {
+    if (currentEvent) localStorage.setItem(EVENT_KEY, currentEvent);
+    else localStorage.removeItem(EVENT_KEY);
+  }, [currentEvent]);
 
   const updateBalance = useCallback((amount) => {
     setBalance((current) => Math.max(0, Number((current + amount).toFixed(2))));
@@ -102,7 +108,9 @@ export function AppProvider({ children }) {
     setPage,
     currentGame,
     setCurrentGame,
-  }), [addTransaction, balance, currentGame, deposit, loadTransactions, loadWallet, page, transactions, updateBalance, user?.email, withdraw]);
+    currentEvent,
+    setCurrentEvent,
+  }), [addTransaction, balance, currentEvent, currentGame, deposit, loadTransactions, loadWallet, page, transactions, updateBalance, user?.email, withdraw]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
