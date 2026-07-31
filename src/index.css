@@ -289,6 +289,40 @@
   animation: platform-phone-float 3.8s ease-in-out infinite;
 }
 
+.sports-market-rail {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #39f5ad #111d34;
+}
+
+.sports-market-rail::-webkit-scrollbar {
+  height: 8px;
+}
+
+.sports-market-rail::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: #111d34;
+}
+
+.sports-market-rail::-webkit-scrollbar-thumb {
+  border: 2px solid #111d34;
+  border-radius: 999px;
+  background: #39f5ad;
+}
+
+[data-theme="light"] .sports-market-rail {
+  scrollbar-color: #0cb978 #dce5ef;
+}
+
+[data-theme="light"] .sports-market-rail::-webkit-scrollbar-track {
+  background: #dce5ef;
+}
+
+[data-theme="light"] .sports-market-rail::-webkit-scrollbar-thumb {
+  border-color: #dce5ef;
+  background: #0cb978;
+}
+
 /* ---- Drawer / search / reward overlays ---- */
 .app-drawer {
   animation: app-drawer-in .34s cubic-bezier(.16, 1, .3, 1) both;
