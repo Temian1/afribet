@@ -33,6 +33,17 @@ const BOTTOM_ITEMS = [
     ['menu', 'Menu', 'menu'],
 ];
 
+const QUICK_ACCESS = [
+    ['sports', 'SPORTS', 'ball'],
+    ['sports', 'LIVE SPORTS', 'signal'],
+    ['mybets', 'LIVE RESULTS', 'monitor'],
+    ['sports', 'TODAY', 'calendar'],
+    ['casino', 'CASINO', 'slots'],
+    ['casino', 'LIVE CASINO', 'casino'],
+    ['promotions', 'PROMOTIO...', 'gift'],
+    ['sports', 'VIRTUAL SP...', 'dice'],
+];
+
 export function PlatformIcon({ name, className = 'size-5', strokeWidth = 1.9 }) {
     if (name === 'ball') return <SportIcon type="football" className={className} strokeWidth={strokeWidth} />;
     return <UiIcon name={name} className={className} strokeWidth={strokeWidth} />;
@@ -54,13 +65,12 @@ function Brand({ compact = false }) {
     );
 }
 
-function MobileHeader({ page, go, user, openAuth, openMenu, openSearch }) {
+function MobileHeader({ page, go, user, openAuth, openQuickMenu, openSearch }) {
     const showCategoryRail = page !== 'sports';
 
     return (
         <header className="fixed inset-x-0 top-0 z-50 xl:hidden">
             <div className="flex h-[61px] items-center bg-[#071226]/95 px-2.5 backdrop-blur-xl">
-                <button className="mr-1 grid size-10 shrink-0 place-items-center rounded-[17px] border border-white/5 bg-[#111d34] text-white transition hover:border-[#39f5ad]/40 hover:text-[#39f5ad] active:scale-90" onClick={openMenu} type="button" aria-label="Open menu"><UiIcon name="menu" className="size-5" /></button>
                 <Brand compact />
                 <button className="ml-1 grid size-10 shrink-0 place-items-center rounded-[17px] border border-white/5 bg-[#111d34] text-white transition hover:border-[#39f5ad]/40 hover:text-[#39f5ad] active:scale-90" onClick={openSearch} type="button" aria-label="Search"><UiIcon name="search" className="size-5" /></button>
                 <div className="ml-auto flex min-w-0 items-center gap-1">
@@ -83,10 +93,73 @@ function MobileHeader({ page, go, user, openAuth, openMenu, openSearch }) {
                     <button className="platform-category min-w-[110px] bg-gradient-to-r from-[#123b7a] to-[#0b1f45]" onClick={() => go('promotions')} type="button"><UiIcon name="gift" className="size-4" />Bonuses</button>
                 </nav>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-start bg-gradient-to-l from-[#071226] via-[#071226] to-transparent pl-5 pr-2">
-                    <button className="pointer-events-auto grid size-11 min-w-11 place-items-center rounded-[18px] border-0 bg-[#39f5ad] text-[#02140d] shadow-[0_0_26px_rgba(57,245,173,.22)] transition hover:rotate-90 active:scale-90" onClick={openMenu} type="button" aria-label="Open quick access menu"><UiIcon name="grid" className="size-6" /></button>
+                    <button className="pointer-events-auto grid size-11 min-w-11 place-items-center rounded-[18px] border-0 bg-[#39f5ad] text-[#02140d] shadow-[0_0_26px_rgba(57,245,173,.22)] transition hover:rotate-90 active:scale-90" onClick={openQuickMenu} type="button" aria-label="Open quick access menu"><UiIcon name="grid" className="size-6" /></button>
                 </div>
             </div> : null}
         </header>
+    );
+}
+
+function DownloadAppBanner() {
+    return (
+        <section className="platform-download-banner relative mt-10 h-[265px] overflow-hidden rounded-[5px] bg-[#b523c8] p-5" aria-label="Download app">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_32%_44%,rgba(255,255,255,.55),transparent_18%),radial-gradient(circle_at_78%_28%,rgba(255,255,255,.2),transparent_18%),linear-gradient(135deg,#f650e5_0%,#a51cc9_48%,#5020b8_100%)]" />
+            <div className="absolute -left-10 top-6 h-[330px] w-[96px] rotate-[28deg] rounded-full bg-white/10 blur-[2px]" />
+            <div className="absolute left-28 top-[-38px] h-[360px] w-[96px] rotate-[31deg] rounded-full bg-white/10 blur-[2px]" />
+            <div className="relative z-[1] text-[43px] font-black uppercase leading-[1.03] text-white drop-shadow-[0_2px_2px_rgba(0,0,0,.1)]">
+                DOWNLOAD<br />APP
+            </div>
+            <div className="platform-phone absolute -bottom-9 right-6 z-[1] h-[170px] w-[105px] rounded-[24px] border-[5px] border-[#d9d7ff] bg-[#0c0c12] shadow-[0_18px_40px_rgba(30,8,80,.45)]">
+                <div className="mx-auto mt-2 h-1 w-9 rounded-full bg-white/50" />
+                <div className="mx-3 mt-4 rounded-lg bg-[#171822] p-2 text-[6px] text-white/80">
+                    <p className="m-0 mb-1 text-[7px] font-bold text-white">Install App</p>
+                    <div className="h-11 rounded bg-white/10" />
+                    <div className="mt-2 h-7 rounded bg-white/15" />
+                </div>
+            </div>
+        </section>
+    );
+}
+
+/* The header's grid button opens this compact quick-access sheet. The bottom
+   nav's Menu tab opens the full AppSidebar drawer — deliberately different. */
+function MobileQuickMenu({ open, closeMenu, go }) {
+    if (!open) return null;
+
+    const navigate = (target) => {
+        closeMenu();
+        go(target);
+    };
+
+    return (
+        <div className="fixed inset-0 z-[90] bg-[#071018] text-white xl:hidden" role="dialog" aria-modal="true" aria-label="Quick access menu">
+            <div className="platform-mobile-menu h-full overflow-y-auto pb-8">
+                <header className="flex h-[75px] items-center justify-between border-b border-white/10 px-4">
+                    <Brand />
+                    <button className="grid size-[38px] place-items-center rounded-full border border-white/5 bg-[#122038] text-white shadow-[0_0_18px_rgba(255,255,255,.05)] transition hover:bg-[#1a2b48] active:scale-90" onClick={closeMenu} type="button" aria-label="Close quick access menu">
+                        <PlatformIcon name="close" className="size-7" strokeWidth={2.4} />
+                    </button>
+                </header>
+                <main className="px-3.5 pt-5">
+                    <h2 className="m-0 text-[18px] font-extrabold text-white">Quick Access</h2>
+                    <div className="mt-3 grid grid-cols-4 gap-2.5">
+                        {QUICK_ACCESS.map(([target, label, icon], index) => (
+                            <button
+                                className="platform-quick-tile flex h-24 min-w-0 flex-col items-center justify-center gap-2 overflow-hidden rounded-[5px] border-0 bg-[#172f5d] px-1.5 text-center text-[12px] font-black uppercase leading-tight text-white shadow-[inset_0_1px_0_rgba(255,255,255,.04)] transition hover:-translate-y-0.5 hover:bg-[#1e3b71] active:scale-95"
+                                style={{ animationDelay: `${90 + index * 35}ms` }}
+                                onClick={() => navigate(target)}
+                                type="button"
+                                key={label}
+                            >
+                                <PlatformIcon name={icon} className="size-8 text-white" strokeWidth={2.2} />
+                                <span className="max-w-full truncate">{label}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <DownloadAppBanner />
+                </main>
+            </div>
+        </div>
     );
 }
 
@@ -168,10 +241,12 @@ export default function PlatformShell({ children }) {
     const { items: betItems, setOpen: setBetSlipOpen } = useBetSlip();
     const [auth, setAuth] = useState({ open: false, mode: 'login' });
     const [menuOpen, setMenuOpen] = useState(false);
+    const [quickMenuOpen, setQuickMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
 
     const go = (target, payload) => {
         setMenuOpen(false);
+        setQuickMenuOpen(false);
         if (target === 'event') setCurrentEvent(payload ?? 'top-1');
         if (target === 'game' && payload) setCurrentGame(payload);
         setPage(target);
@@ -182,7 +257,8 @@ export default function PlatformShell({ children }) {
 
     return (
         <div className="platform-shell min-h-screen overflow-x-hidden bg-[#030810] text-slate-100">
-            <MobileHeader page={page} go={go} user={user} openAuth={openAuth} openMenu={() => setMenuOpen(true)} openSearch={() => setSearchOpen(true)} />
+            <MobileHeader page={page} go={go} user={user} openAuth={openAuth} openQuickMenu={() => setQuickMenuOpen(true)} openSearch={() => setSearchOpen(true)} />
+            <MobileQuickMenu open={quickMenuOpen} closeMenu={() => setQuickMenuOpen(false)} go={go} />
             <AppSidebar open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={go} onOpenAuth={openAuth} />
             <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={go} onOpenGame={openGame} />
             <DesktopChrome page={page} go={go} user={user} openAuth={openAuth} openSearch={() => setSearchOpen(true)} openMenu={() => setMenuOpen(true)} />
