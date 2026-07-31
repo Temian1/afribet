@@ -73,7 +73,7 @@ function OriginalCard({ game, onPlay, favorited, onToggleFavorite, canFavorite }
 
 function DrakonCard({ game, onPlay, launching = false, favorited, onToggleFavorite, canFavorite }) {
     return (
-        <article className="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-purple/40 hover:shadow-xl hover:shadow-purple/15 dark:border-white/10 dark:bg-ink-3">
+        <article className="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-[var(--pf-border)] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-purple/40 hover:shadow-xl hover:shadow-purple/15 dark:bg-ink-3">
             <div className="h-full overflow-hidden bg-slate-100 dark:bg-ink">
                 {game.image && <img src={game.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />}
             </div>

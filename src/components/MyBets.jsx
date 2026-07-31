@@ -10,7 +10,7 @@ const STATUS_META = {
     won: { label: 'Won', cls: 'border-neon-green/40 bg-neon-green/10 text-emerald-600 dark:text-neon-green-l' },
     lost: { label: 'Lost', cls: 'border-neon-red/40 bg-neon-red/10 text-neon-red' },
     cashout: { label: 'Cashed Out', cls: 'border-cyan/40 bg-cyan/10 text-cyan-700 dark:text-cyan-l' },
-    void: { label: 'Void', cls: 'border-slate-300 bg-slate-100 text-slate-500 dark:border-white/15 dark:bg-white/[.06]' },
+    void: { label: 'Void', cls: 'border-[var(--pf-border)] bg-slate-100 text-slate-500 dark:bg-white/[.06]' },
 };
 
 const FILTERS = [

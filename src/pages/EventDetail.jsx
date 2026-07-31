@@ -1,71 +1,84 @@
 import { useMemo, useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { useBetSlip } from '../contexts/BetSlipContext';
-import { SportIcon, TeamCrest, UiIcon } from '../components/SportIcons';
-import { buildMarkets, buildStats, findEvent, MARKET_GROUPS } from '../data/sportsData';
+import { TeamCrest, UiIcon } from '../components/SportIcons';
+import { buildMarkets, findEvent, MARKET_GROUPS } from '../data/sportsData';
 
-const FORM_TONE = { W: 'bg-[#39f5ad] text-[#03150e]', D: 'bg-[#3d5480] text-white', L: 'bg-[#f0435c] text-white' };
+/** "Today at 16:00" -> { date: '29/07', time: '16:00' } for the hero card. */
+function kickoff(event) {
+    const time = /(\d{1,2}:\d{2})/.exec(event.time)?.[1] ?? '00:00';
+    const when = new Date();
+    if (/tomorrow/i.test(event.time)) when.setDate(when.getDate() + 1);
+    const date = `${String(when.getDate()).padStart(2, '0')}/${String(when.getMonth() + 1).padStart(2, '0')}`;
+    return { date, time };
+}
 
-function FormRun({ run }) {
+function Crumb({ children, className = '' }) {
+    return <span className={`shrink-0 rounded-full bg-[var(--pf-panel)] px-3 py-1.5 text-[12px] font-semibold text-[var(--pf-text)] ${className}`}>{children}</span>;
+}
+
+function PinIcon() {
     return (
-        <div className="flex gap-1">
-            {run.map((result, index) => (
-                <span
-                    className={`grid size-6 place-items-center rounded-md text-[11px] font-black ${FORM_TONE[result]} animate-scale-in`}
-                    style={{ animationDelay: `${index * 60}ms` }}
-                    key={`${result}-${index}`}
-                >
-                    {result}
-                </span>
-            ))}
-        </div>
+        <svg className="size-4 shrink-0 -rotate-45 text-[var(--pf-accent)]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M14.5 2.5 21.5 9.5l-2.1 2.1-1.4-.4-3.4 3.4.6 3.3-1.8 1.8-3.9-3.9-4.6 4.6-1.1-1.1 4.6-4.6-3.9-3.9L6.3 9l3.3.6L13 6.2l-.4-1.4z" />
+        </svg>
     );
 }
 
-function MarketBoard({ market, event }) {
+function BoostIcon() {
+    return (
+        <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="2.5" y="6" width="19" height="12" rx="2.5" /><path d="M7 10.5v3M17 10.5v3M11 12h2" />
+        </svg>
+    );
+}
+
+function MarketCard({ market, event, collapsedAll }) {
     const { toggle, has } = useBetSlip();
-    const [open, setOpen] = useState(true);
+    const [override, setOverride] = useState(null);
+    const open = override ?? !collapsedAll;
+    const columns = market.columns === 3 ? 'grid-cols-3' : 'grid-cols-2';
 
     return (
-        <section className="overflow-hidden rounded-[12px] border border-[#22314c] bg-[#071226] transition hover:border-[#39f5ad]/25">
+        <section className="mb-2.5 overflow-hidden rounded-[12px] border border-[var(--pf-border)] bg-[var(--pf-card)]">
             <button
-                className="flex w-full items-center gap-3 border-0 bg-transparent px-4 py-3 text-left text-[14px] font-bold text-white"
-                onClick={() => setOpen((value) => !value)}
+                className="flex w-full items-center gap-2.5 border-0 bg-transparent px-3.5 py-3.5 text-left"
+                onClick={() => setOverride(!open)}
                 type="button"
                 aria-expanded={open}
             >
-                <span className="grid size-7 shrink-0 place-items-center rounded-md bg-[#12233f] text-[#39f5ad]"><UiIcon name="tune" className="size-4" /></span>
-                <span className="truncate">{market.name}</span>
-                <span className="ml-auto shrink-0 rounded-full bg-[#12233f] px-2 py-0.5 text-[10px] font-bold text-[#7ea9ec]">{market.selections.length}</span>
-                <UiIcon name="chevronDown" className={`size-4 shrink-0 text-[#7ea9ec] transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
+                <PinIcon />
+                <b className="min-w-0 flex-1 truncate text-[14px] font-bold text-[var(--pf-text)]">{market.name}</b>
+                <span className="shrink-0 text-[var(--pf-faint)]"><BoostIcon /></span>
+                <UiIcon name="chevronDown" className={`size-4 shrink-0 text-[var(--pf-faint)] transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
             </button>
 
             <div className={`grid transition-all duration-300 ease-out ${open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                 <div className="overflow-hidden">
-                    <div className="grid grid-cols-2 gap-2 px-3 pb-3 sm:grid-cols-3">
-                        {market.selections.map((selection, index) => {
+                    <div className={`grid ${columns} gap-px border-t border-[var(--pf-border)] bg-[var(--pf-border)]`}>
+                        {market.selections.map((selection) => {
                             const marketId = `${event.id}-${market.id}-${selection.key}`;
                             const selected = has(marketId);
                             return (
                                 <button
-                                    className={`animate-fade-up flex min-h-[52px] items-center justify-between gap-2 rounded-[9px] border px-3 text-left transition duration-200 hover:-translate-y-0.5 active:scale-[.98] ${selected ? 'border-[#39f5ad] bg-[#14392f] text-[#39f5ad]' : 'border-transparent bg-[#0d1930] text-white hover:border-[#39f5ad]/45'}`}
-                                    style={{ animationDelay: `${index * 35}ms` }}
+                                    className={`flex min-h-[52px] items-center justify-between gap-2 border-0 px-3.5 text-left transition ${selected ? 'bg-[var(--pf-accent-soft)]' : 'bg-[var(--pf-card)] hover:bg-[var(--pf-panel)]'}`}
                                     onClick={() => toggle({
                                         marketId,
                                         eventId: event.id,
                                         eventName: `${event.home} vs ${event.away}`,
                                         league: event.league,
                                         marketType: market.name,
-                                        label: selection.label,
+                                        label: selection.name,
                                         selection: selection.key,
                                         odds: selection.odds,
                                     })}
                                     type="button"
                                     aria-pressed={selected}
+                                    aria-label={`${market.name}: ${selection.name} at ${selection.odds.toFixed(2)}`}
                                     key={selection.key}
                                 >
-                                    <small className="min-w-0 flex-1 truncate text-[11px] text-[#89a9d8]">{selection.label}</small>
-                                    <b className="shrink-0 text-[14px]">{selection.odds.toFixed(2)}</b>
+                                    <span className={`min-w-0 truncate text-[13px] ${selected ? 'text-[var(--pf-accent)]' : 'text-[var(--pf-odds-label)]'}`}>{selection.label}</span>
+                                    <b className={`shrink-0 text-[13px] font-bold ${selected ? 'text-[var(--pf-accent)]' : 'text-[var(--pf-text)]'}`}>{selection.odds.toFixed(2)}</b>
                                 </button>
                             );
                         })}
@@ -78,23 +91,26 @@ function MarketBoard({ market, event }) {
 
 export default function EventDetail() {
     const { currentEvent, setPage } = useApp();
-    const { items } = useBetSlip();
     const [group, setGroup] = useState('all');
+    const [collapsedAll, setCollapsedAll] = useState(false);
+    const [starred, setStarred] = useState(false);
+    const [query, setQuery] = useState('');
+    const [searchOpen, setSearchOpen] = useState(false);
     const event = findEvent(currentEvent);
 
     const markets = useMemo(() => (event ? buildMarkets(event) : []), [event]);
-    const stats = useMemo(() => (event ? buildStats(event) : null), [event]);
-    const visible = group === 'all' ? markets : markets.filter((market) => market.group === group);
-    const legs = event ? items.filter((item) => item.eventId === event.id).length : 0;
+    const byGroup = group === 'all' ? markets : markets.filter((market) => market.group === group);
+    const term = query.trim().toLowerCase();
+    const visible = term ? byGroup.filter((market) => market.name.toLowerCase().includes(term)) : byGroup;
 
     if (!event) {
         return (
-            <div className="grid min-h-[60vh] place-items-center bg-[#030810] px-6 text-center text-white">
+            <div className="grid min-h-[60vh] place-items-center bg-[var(--pf-bg)] px-6 text-center text-[var(--pf-text)]">
                 <div className="animate-fade-up">
-                    <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[#12233f] text-[#39f5ad]"><UiIcon name="search" className="size-7" /></span>
+                    <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-[var(--pf-panel)] text-[var(--pf-accent)]"><UiIcon name="search" className="size-7" /></span>
                     <h1 className="mt-4 text-[20px] font-black">Event not found</h1>
-                    <p className="mt-1 text-[13px] text-[#7ea9ec]">This match may have finished or been removed from the board.</p>
-                    <button className="mt-5 h-[42px] rounded-[19px] border-0 bg-[#39f5ad] px-5 text-[14px] font-bold text-[#03150e] transition active:scale-95" onClick={() => setPage('sports')} type="button">
+                    <p className="mt-1 text-[13px] text-[var(--pf-muted)]">This match may have finished or been removed from the board.</p>
+                    <button className="mt-5 h-[42px] rounded-[19px] border-0 bg-[var(--pf-accent)] px-5 text-[14px] font-bold text-[var(--pf-accent-ink)] transition active:scale-95" onClick={() => setPage('sports')} type="button">
                         Back to sports
                     </button>
                 </div>
@@ -102,101 +118,92 @@ export default function EventDetail() {
         );
     }
 
+    const { date, time } = kickoff(event);
+    const counts = {
+        all: markets.length,
+        main: markets.filter((market) => market.group === 'main').length,
+        specials: markets.filter((market) => market.group === 'specials').length,
+    };
+
     return (
-        <div className="min-h-screen bg-[#030810] pb-10 text-white">
-            <header className="relative overflow-hidden border-b border-[#22314c] bg-gradient-to-b from-[#0b1c38] to-[#071226] px-3 pb-5 pt-3 sm:px-5">
-                <div className="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-[#39f5ad]/10 blur-[70px]" aria-hidden="true" />
-                <div className="relative">
-                    <div className="flex items-center gap-2">
-                        <button className="grid size-9 shrink-0 place-items-center rounded-[10px] border-0 bg-[#12233f] text-white transition hover:text-[#39f5ad] active:scale-90" onClick={() => setPage('sports')} type="button" aria-label="Back to sports">
-                            <UiIcon name="chevronRight" className="size-5 rotate-180" />
-                        </button>
-                        <div className="flex min-w-0 flex-1 items-center gap-1.5 text-[10px] text-[#74a4fb]">
-                            <span className="shrink-0 rounded-full bg-[#102653] px-2 py-0.5">{event.region}</span>
-                            <span className="truncate rounded-full bg-[#102653] px-2 py-0.5">{event.league}</span>
-                        </div>
-                        <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#102653] px-2.5 py-1 text-[10px] font-bold text-[#39f5ad]">
-                            <span className="relative flex size-1.5">
-                                <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#39f5ad] opacity-70" />
-                                <span className="relative size-1.5 rounded-full bg-[#39f5ad]" />
-                            </span>
-                            {event.time}
-                        </span>
-                    </div>
-
-                    <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                        {[event.home, event.away].map((team, index) => (
-                            <div className={`animate-fade-up flex min-w-0 flex-col items-center gap-2 ${index === 1 ? 'order-3' : ''}`} style={{ animationDelay: `${index * 90}ms` }} key={team}>
-                                <TeamCrest name={team} className="size-14 drop-shadow-[0_6px_18px_rgba(57,245,173,.18)]" />
-                                <b className="line-clamp-2 text-center text-[14px] font-extrabold sm:text-[16px]">{team}</b>
-                            </div>
-                        ))}
-                        <div className="order-2 flex flex-col items-center gap-1">
-                            <span className="text-[11px] font-bold uppercase tracking-[2px] text-[#7ea9ec]">VS</span>
-                            <span className="text-[#39f5ad]"><SportIcon type={event.sport} className="size-7" /></span>
-                        </div>
-                    </div>
-
-                    <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[11px] text-[#8ab1f1]">
-                        <span className="rounded-full border border-[#22314c] bg-[#0a1830] px-3 py-1.5">{markets.length} market groups</span>
-                        <span className="rounded-full border border-[#22314c] bg-[#0a1830] px-3 py-1.5">+{event.more} selections</span>
-                        {legs > 0 ? <span className="animate-scale-in rounded-full border border-[#39f5ad]/40 bg-[#14392f] px-3 py-1.5 font-bold text-[#39f5ad]">{legs} in bet slip</span> : null}
-                    </div>
+        <div className="min-h-screen bg-[var(--pf-bg)] pb-10">
+            <div className="flex items-center gap-2 px-3 py-2.5 sm:px-4">
+                <button className="grid size-9 shrink-0 place-items-center rounded-full border-0 bg-[var(--pf-panel)] text-[var(--pf-text)] transition hover:text-[var(--pf-accent)] active:scale-90" onClick={() => setPage('sports')} type="button" aria-label="Back to sports">
+                    <UiIcon name="chevronRight" className="size-5 rotate-180" />
+                </button>
+                <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+                    <Crumb>Football</Crumb>
+                    <Crumb>{event.region}</Crumb>
+                    <Crumb className="max-sm:max-w-[190px] max-sm:truncate">{event.league}</Crumb>
                 </div>
-            </header>
-
-            {stats ? (
-                <section className="mx-3 mt-4 rounded-[12px] border border-[#22314c] bg-[#071226] p-4 sm:mx-5">
-                    <h2 className="m-0 flex items-center gap-2 text-[14px] font-black">
-                        <span className="text-[#39f5ad]"><UiIcon name="results" className="size-5" /></span>Form &amp; head-to-head
-                    </h2>
-                    <div className="mt-3 space-y-2.5">
-                        {[['home', event.home], ['away', event.away]].map(([side, team]) => (
-                            <div className="flex items-center gap-3" key={side}>
-                                <TeamCrest name={team} className="size-5" />
-                                <span className="min-w-0 flex-1 truncate text-[12px] font-bold">{team}</span>
-                                <FormRun run={stats.form[side]} />
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-4">
-                        <div className="flex justify-between text-[11px] text-[#8ab1f1]">
-                            <span>{stats.h2h.home}W</span><span>{stats.h2h.draws}D</span><span>{stats.h2h.away}W</span>
-                        </div>
-                        <div className="mt-1.5 flex h-2 overflow-hidden rounded-full bg-[#12233f]">
-                            {[['#39f5ad', stats.h2h.home], ['#3d5480', stats.h2h.draws], ['#f0435c', stats.h2h.away]].map(([color, value]) => (
-                                <span
-                                    className="h-full transition-[width] duration-700 ease-out"
-                                    style={{ width: `${stats.h2h.total ? (value / stats.h2h.total) * 100 : 33.3}%`, background: color }}
-                                    key={color}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            ) : null}
-
-            <div className="no-scrollbar sticky top-[61px] z-20 mt-4 flex gap-1.5 overflow-x-auto border-y border-[#22314c] bg-[#030810]/95 px-3 py-2.5 backdrop-blur-xl sm:px-5 xl:top-[74px]">
-                {MARKET_GROUPS.map(([id, label]) => (
-                    <button
-                        className={`h-9 shrink-0 rounded-[18px] border-0 px-3.5 text-[12px] font-bold transition active:scale-95 ${group === id ? 'bg-[#39f5ad] text-[#03150e] shadow-[0_0_20px_rgba(57,245,173,.25)]' : 'bg-[#12233f] text-[#bad0f5] hover:bg-[#1a2f52]'}`}
-                        onClick={() => setGroup(id)}
-                        type="button"
-                        aria-pressed={group === id}
-                        key={id}
-                    >
-                        {label}
-                    </button>
-                ))}
+                <button
+                    className={`grid size-9 shrink-0 place-items-center rounded-full border-0 bg-[var(--pf-panel)] transition active:scale-90 ${starred ? 'text-[#ffb400]' : 'text-[var(--pf-text)]'}`}
+                    onClick={() => setStarred((value) => !value)}
+                    type="button"
+                    aria-pressed={starred}
+                    aria-label="Add to favourites"
+                >
+                    <UiIcon name={starred ? 'starFilled' : 'star'} className="size-5" />
+                </button>
             </div>
 
-            <div className="mt-3 space-y-2.5 px-3 sm:px-5">
+            <header className="event-pitch relative mx-3 flex h-[110px] items-center justify-center overflow-hidden rounded-[10px] sm:mx-4 sm:h-[130px]">
+                <div className="relative z-[1] flex items-center gap-6 sm:gap-10">
+                    <TeamCrest name={event.home} className="size-8 drop-shadow-[0_2px_6px_rgba(0,0,0,.55)] sm:size-9" />
+                    <div className="rounded-[8px] bg-[color-mix(in_oklab,var(--pf-surface)_88%,transparent)] px-4 py-1.5 text-center backdrop-blur-sm">
+                        <b className="block text-[15px] font-bold leading-tight text-[var(--pf-text)] sm:text-[16px]">{date}</b>
+                        <span className="block text-[15px] leading-tight text-[var(--pf-text)] sm:text-[16px]">{time}</span>
+                    </div>
+                    <TeamCrest name={event.away} className="size-8 drop-shadow-[0_2px_6px_rgba(0,0,0,.55)] sm:size-9" />
+                </div>
+                <span className="absolute inset-x-0 bottom-1 z-[1] truncate px-3 text-center text-[11px] font-semibold text-white/90 drop-shadow sm:hidden">
+                    {event.home} — {event.away}
+                </span>
+            </header>
+
+            <div className="sticky top-[61px] z-20 mt-2.5 flex items-center gap-2 bg-[var(--pf-bg)]/95 px-3 py-2.5 backdrop-blur-xl sm:px-4 xl:top-[74px]">
+                <button className="order-2 grid size-9 shrink-0 place-items-center rounded-full border-0 bg-[var(--pf-panel)] text-[var(--pf-text)] transition hover:text-[var(--pf-accent)] active:scale-90 xl:order-1" onClick={() => setSearchOpen((value) => !value)} type="button" aria-label="Search markets" aria-expanded={searchOpen}>
+                    <UiIcon name="search" className="size-[18px]" />
+                </button>
+                <div className="no-scrollbar order-1 flex min-w-0 flex-1 gap-2 overflow-x-auto xl:order-2 xl:flex-none">
+                    {MARKET_GROUPS.map(([id, label]) => (
+                        <button
+                            className={`h-9 shrink-0 rounded-full border px-4 text-[13px] font-semibold transition active:scale-95 ${group === id ? 'border-transparent bg-[var(--pf-accent)] text-[var(--pf-accent-ink)]' : 'border-[var(--pf-border)] bg-transparent text-[var(--pf-text)] hover:bg-[var(--pf-panel)]'}`}
+                            onClick={() => setGroup(id)}
+                            type="button"
+                            aria-pressed={group === id}
+                            key={id}
+                        >
+                            {label} ({counts[id]})
+                        </button>
+                    ))}
+                </div>
+                <button className="order-3 ml-auto grid size-9 shrink-0 place-items-center rounded-full border-0 bg-transparent text-[var(--pf-text)] transition hover:text-[var(--pf-accent)] active:scale-90" onClick={() => setCollapsedAll((value) => !value)} type="button" aria-label={collapsedAll ? 'Expand all markets' : 'Collapse all markets'}>
+                    <svg className={`size-5 transition-transform duration-300 ${collapsedAll ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="m6 13 6-6 6 6M6 18l6-6 6 6" />
+                    </svg>
+                </button>
+            </div>
+
+            {searchOpen ? (
+                <div className="animate-fade-up px-3 pb-2 sm:px-4">
+                    <input
+                        className="w-full rounded-full border border-[var(--pf-border)] bg-[var(--pf-input)] px-4 py-2.5 text-[13px] text-[var(--pf-text)] outline-none transition placeholder:text-[var(--pf-faint)] focus:border-[var(--pf-accent)]"
+                        value={query}
+                        onChange={(fromEvent) => setQuery(fromEvent.target.value)}
+                        placeholder="Filter markets…"
+                        aria-label="Filter markets"
+                    />
+                </div>
+            ) : null}
+
+            <div className="px-3 sm:px-4 xl:columns-2 xl:gap-2.5">
                 {visible.map((market, index) => (
-                    <div className="animate-fade-up" style={{ animationDelay: `${index * 45}ms` }} key={market.id}>
-                        <MarketBoard market={market} event={event} />
+                    <div className="animate-fade-up break-inside-avoid" style={{ animationDelay: `${index * 40}ms` }} key={market.id}>
+                        <MarketCard market={market} event={event} collapsedAll={collapsedAll} />
                     </div>
                 ))}
-                {visible.length === 0 ? <p className="py-10 text-center text-[13px] text-[#7ea9ec]">No markets in this group.</p> : null}
+                {visible.length === 0 ? <p className="py-10 text-center text-[13px] text-[var(--pf-muted)]">No markets match that filter.</p> : null}
             </div>
         </div>
     );

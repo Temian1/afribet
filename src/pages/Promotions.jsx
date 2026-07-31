@@ -7,7 +7,7 @@ export default function Promotions() {
     const { setPage } = useApp();
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-ink">
-            <section className="relative overflow-hidden border-b border-slate-200 py-14 dark:border-white/[.07]">
+            <section className="relative overflow-hidden border-b border-[var(--pf-border)] py-14">
                 <Aurora />
                 <div className="shell relative">
                     <span className="badge border border-gold/40 bg-gold/10 px-3 py-1.5 text-amber-600 dark:text-gold-l">Exclusive Offers</span>

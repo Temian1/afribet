@@ -12,7 +12,7 @@ function OddsButton({ label, odd, selected, onClick }) {
       className={`group/odd rounded-xl border px-3 py-2.5 transition-all duration-200 ${
         selected
           ? "border-gold bg-gradient-to-b from-gold/20 to-gold/10 text-amber-700 shadow-md shadow-gold/15 dark:text-gold-l"
-          : "border-slate-200 bg-slate-50 text-slate-600 hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-md dark:border-white/10 dark:bg-white/[.04] dark:text-slate-300"
+          : "border-[var(--pf-border)] bg-slate-50 text-slate-600 hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-md dark:bg-white/[.04] dark:text-slate-300"
       }`}
     >
       <span className="block text-[10px] font-bold uppercase tracking-wide opacity-70">{label}</span>
@@ -173,7 +173,7 @@ export default function SportsBetting({ filterLeague, showHeader = true }) {
           />
         )}
         <div className="mb-6 flex flex-wrap items-center gap-3">
-          <div className="flex overflow-hidden rounded-xl border border-slate-200 dark:border-white/10" role="tablist" aria-label="Event view">
+          <div className="flex overflow-hidden rounded-xl border border-[var(--pf-border)]" role="tablist" aria-label="Event view">
             {VIEWS.map((v) => (
               <button
                 key={v.id}

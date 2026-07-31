@@ -32,7 +32,7 @@ function Countdown({ day }) {
     const pad = (n) => String(n).padStart(2, '0');
 
     return (
-        <span className="badge border border-slate-200 bg-slate-100 tabular-nums text-slate-600 dark:border-white/10 dark:bg-white/[.06] dark:text-slate-300">
+        <span className="badge border border-[var(--pf-border)] bg-slate-100 tabular-nums text-slate-600 dark:bg-white/[.06] dark:text-slate-300">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
             {pad(h)}:{pad(m)}:{pad(s)}
         </span>

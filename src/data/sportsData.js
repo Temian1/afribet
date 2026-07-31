@@ -92,94 +92,85 @@ export function buildMarkets(event) {
         {
             id: 'result',
             name: 'Match Result',
-            group: 'popular',
+            group: 'main',
+            columns: 3,
             selections: [
-                { key: '1', label: event.home, odds: home },
-                { key: 'X', label: 'Draw', odds: draw },
-                { key: '2', label: event.away, odds: away },
+                { key: '1', label: '1', name: event.home, odds: home },
+                { key: 'X', label: 'X', name: 'Draw', odds: draw },
+                { key: '2', label: '2', name: event.away, odds: away },
             ],
         },
         {
             id: 'double-chance',
             name: 'Double Chance',
-            group: 'popular',
+            group: 'main',
+            columns: 3,
             selections: [
-                { key: '1X', label: `${event.home} or Draw`, odds: price(random, 1.15, 1.55) },
-                { key: '12', label: 'Home or Away', odds: price(random, 1.2, 1.5) },
-                { key: 'X2', label: `Draw or ${event.away}`, odds: price(random, 1.3, 2.1) },
+                { key: '1X', label: '1X', name: `${event.home} or Draw`, odds: price(random, 1.15, 1.35) },
+                { key: '12', label: '12', name: 'Home or Away', odds: price(random, 1.25, 1.45) },
+                { key: 'X2', label: 'X2', name: `Draw or ${event.away}`, odds: price(random, 1.4, 1.9) },
             ],
         },
         {
             id: 'btts',
-            name: 'Both Teams to Score',
-            group: 'popular',
+            name: 'Both Teams To Score',
+            group: 'main',
+            columns: 2,
             selections: [
-                { key: 'yes', label: 'Yes', odds: price(random, 1.55, 2.05) },
-                { key: 'no', label: 'No', odds: price(random, 1.6, 2.2) },
-            ],
-        },
-        {
-            id: 'totals',
-            name: 'Total Goals',
-            group: 'goals',
-            selections: [1.5, 2.5, 3.5].flatMap((line) => [
-                { key: `o${line}`, label: `Over ${line}`, odds: price(random, 1.25, 2.9) },
-                { key: `u${line}`, label: `Under ${line}`, odds: price(random, 1.3, 3.1) },
-            ]),
-        },
-        {
-            id: 'team-totals',
-            name: 'Team Totals',
-            group: 'goals',
-            selections: [
-                { key: 'h-o1', label: `${event.home} Over 1.5`, odds: price(random, 1.7, 2.8) },
-                { key: 'h-u1', label: `${event.home} Under 1.5`, odds: price(random, 1.4, 2.2) },
-                { key: 'a-o1', label: `${event.away} Over 1.5`, odds: price(random, 1.8, 3.2) },
-                { key: 'a-u1', label: `${event.away} Under 1.5`, odds: price(random, 1.3, 2.0) },
+                { key: 'yes', label: 'Yes', name: 'Both teams score', odds: price(random, 1.75, 2.2) },
+                { key: 'no', label: 'No', name: 'Not both teams score', odds: price(random, 1.5, 1.9) },
             ],
         },
         {
             id: 'handicap',
             name: 'Asian Handicap',
-            group: 'handicap',
-            selections: ['-1.5', '-0.5', '+0.5', '+1.5'].flatMap((line) => [
-                { key: `h${line}`, label: `${event.home} ${line}`, odds: price(random, 1.3, 4.4) },
+            group: 'main',
+            columns: 2,
+            selections: [['-1', '+1'], ['-0.5', '+0.5'], ['0', '0'], ['+0.5', '-0.5']].flatMap(([hl, al]) => [
+                { key: `h${hl}`, label: `1 (${hl})`, name: `${event.home} ${hl}`, odds: price(random, 1.2, 3.6) },
+                { key: `a${al}`, label: `2 (${al})`, name: `${event.away} ${al}`, odds: price(random, 1.2, 3.6) },
+            ]),
+        },
+        {
+            id: 'totals',
+            name: 'Over/Under',
+            group: 'main',
+            columns: 2,
+            selections: [1.5, 2, 2.5].flatMap((line) => [
+                { key: `o${line}`, label: `Over (${line})`, name: `Over ${line} goals`, odds: price(random, 1.4, 2.5) },
+                { key: `u${line}`, label: `Under (${line})`, name: `Under ${line} goals`, odds: price(random, 1.4, 2.6) },
             ]),
         },
         {
             id: 'half',
             name: 'Half Time / Full Time',
             group: 'specials',
+            columns: 3,
             selections: [
-                { key: 'hh', label: 'Home / Home', odds: price(random, 2.2, 4.5) },
-                { key: 'dd', label: 'Draw / Draw', odds: price(random, 4.5, 7.5) },
-                { key: 'aa', label: 'Away / Away', odds: price(random, 3.0, 6.5) },
-                { key: 'dh', label: 'Draw / Home', odds: price(random, 3.4, 5.6) },
-                { key: 'da', label: 'Draw / Away', odds: price(random, 4.0, 6.8) },
-                { key: 'hd', label: 'Home / Draw', odds: price(random, 5.0, 9.0) },
+                { key: 'hh', label: '1/1', name: 'Home / Home', odds: price(random, 2.2, 4.5) },
+                { key: 'dd', label: 'X/X', name: 'Draw / Draw', odds: price(random, 4.5, 7.5) },
+                { key: 'aa', label: '2/2', name: 'Away / Away', odds: price(random, 3.0, 6.5) },
+                { key: 'dh', label: 'X/1', name: 'Draw / Home', odds: price(random, 3.4, 5.6) },
+                { key: 'da', label: 'X/2', name: 'Draw / Away', odds: price(random, 4.0, 6.8) },
+                { key: 'hd', label: '1/X', name: 'Home / Draw', odds: price(random, 5.0, 9.0) },
             ],
         },
         {
             id: 'corners',
             name: 'Total Corners',
             group: 'specials',
+            columns: 2,
             selections: [
-                { key: 'c-o8', label: 'Over 8.5', odds: price(random, 1.5, 2.2) },
-                { key: 'c-u8', label: 'Under 8.5', odds: price(random, 1.6, 2.4) },
-                { key: 'c-o10', label: 'Over 10.5', odds: price(random, 2.0, 3.2) },
-                { key: 'c-u10', label: 'Under 10.5', odds: price(random, 1.3, 1.8) },
+                { key: 'c-o8', label: 'Over (8.5)', name: 'Over 8.5 corners', odds: price(random, 1.5, 2.2) },
+                { key: 'c-u8', label: 'Under (8.5)', name: 'Under 8.5 corners', odds: price(random, 1.6, 2.4) },
+                { key: 'c-o10', label: 'Over (10.5)', name: 'Over 10.5 corners', odds: price(random, 2.0, 3.2) },
+                { key: 'c-u10', label: 'Under (10.5)', name: 'Under 10.5 corners', odds: price(random, 1.3, 1.8) },
             ],
         },
     ];
 }
 
-export const MARKET_GROUPS = [
-    ['all', 'All markets'],
-    ['popular', 'Popular'],
-    ['goals', 'Goals'],
-    ['handicap', 'Handicap'],
-    ['specials', 'Specials'],
-];
+export const MARKET_GROUPS = [['all', 'All'], ['main', 'Main'], ['specials', 'Specials']];
 
 /** Form + head-to-head panel data, also derived from the event id. */
 export function buildStats(event) {

@@ -4,6 +4,7 @@ import { useBetSlip } from '../contexts/BetSlipContext';
 import { THUMBS } from '../games/thumbnails';
 import { BrandDiscord, BrandFacebook, BrandInstagram, BrandTelegram, BrandX } from '../components/Icons';
 import { SportIcon, TeamCrest, UiIcon } from '../components/SportIcons';
+import { TOP_EVENTS } from '../data/sportsData';
 
 const WINNERS = [
     ['Super Hot Tea...', '34k ETB', 'hot', '2', false],
@@ -28,42 +29,6 @@ const SPORTS = [
     ['cricket', 'Cricket'],
     ['boxing', 'Combat Sports'],
     ['rugby', 'Rugby League'],
-];
-
-const DESKTOP_MATCHES = [
-    { time: '16:00', home: 'Kairat Almaty', away: 'AC Omonia Nicosia', odds: ['2.08', '3.26', '3.41'], more: '+137' },
-    { time: '17:00', home: 'FK Kauno Zalgiris', away: 'Klaksvik', odds: ['1.72', '3.50', '4.70'], more: '+134' },
-    { time: '18:00', home: 'Lech Poznan', away: 'AGF Aarhus', odds: ['1.61', '3.85', '5.03'], more: '+138', featured: true },
-    { time: '18:30', home: 'CS U Craiova', away: 'Levski Sofia', odds: ['1.90', '3.39', '3.86'], more: '+135' },
-    { time: '18:45', home: 'Hapoel Beer Sheva', away: 'Viking FK', odds: ['1.58', '3.64', '5.20'], more: '+128' },
-];
-
-const MOBILE_MATCHES = [
-    {
-        date: '13 Aug at 01:30',
-        league: 'Test Series',
-        home: 'Australia',
-        away: 'Bangladesh',
-        odds: ['1.08', '8.18', '20.20'],
-        more: '+22',
-    },
-    {
-        date: 'Today at 16:00',
-        league: 'UEFA Champions League',
-        home: 'Kairat Almaty',
-        away: 'AC Omonia Nicosia',
-        odds: ['2.08', '3.26', '3.41'],
-        more: '+137',
-    },
-    {
-        date: 'Today at 18:30',
-        league: 'UEFA Conference League',
-        home: 'CS U Craiova',
-        away: 'Levski Sofia',
-        odds: ['1.90', '3.39', '3.86'],
-        more: '+135',
-        featured: true,
-    },
 ];
 
 const CASINO_SECTIONS = [
@@ -122,7 +87,7 @@ const ART_LABELS = {
 
 function Brand({ compact = false }) {
     return (
-        <span className="inline-flex items-center text-[#39f5ad]">
+        <span className="inline-flex items-center text-[var(--pf-accent)]">
             <svg className={`${compact ? 'size-[18px]' : 'size-7'} shrink-0`} viewBox="0 0 32 32" fill="none" aria-hidden="true">
                 <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="2" />
                 <path d="M16 3 20 10l8 1-6 6 2 8-8-4-8 4 2-8-6-6 8-1Z" fill="currentColor" fillOpacity=".9" />
@@ -139,7 +104,7 @@ function Brand({ compact = false }) {
 function WinnerArt({ type }) {
     const [icon, first, second] = ART_LABELS[type];
     return (
-        <div className={`flex h-[70px] w-[54px] shrink-0 flex-col items-center justify-center overflow-hidden rounded bg-gradient-to-br text-center text-white shadow-inner ${ART_STYLES[type]}`}>
+        <div className={`flex h-[70px] w-[54px] shrink-0 flex-col items-center justify-center overflow-hidden rounded bg-gradient-to-br text-center text-[var(--pf-text)] shadow-inner ${ART_STYLES[type]}`}>
             <b className="text-[20px] leading-none">{icon}</b>
             <span className="mt-1 text-[7px] font-black leading-none">{first}<br />{second}</span>
         </div>
@@ -149,19 +114,19 @@ function WinnerArt({ type }) {
 function WinnerRail() {
     return (
         <section
-            className="order-2 mx-5 mt-10 flex h-[95px] gap-3 overflow-hidden rounded-lg border border-[#263752] bg-[#0b1528] p-[7px] xl:order-1 xl:mx-0 xl:mt-0 xl:h-[103px] xl:gap-3 xl:p-[10px_12px]"
+            className="order-2 mx-5 mt-10 flex h-[95px] gap-3 overflow-hidden rounded-lg border border-[var(--pf-border)] bg-[var(--pf-card)] p-[7px] xl:order-1 xl:mx-0 xl:mt-0 xl:h-[103px] xl:gap-3 xl:p-[10px_12px]"
             aria-label="Recent wins"
         >
             {WINNERS.map(([title, prize, type, stars, mobile], index) => (
                 <article
-                    className={`${mobile ? 'flex' : 'hidden'} h-[80px] min-w-[153px] items-center gap-2 overflow-hidden rounded-md bg-[#19243a] p-[5px] xl:flex`}
+                    className={`${mobile ? 'flex' : 'hidden'} h-[80px] min-w-[153px] items-center gap-2 overflow-hidden rounded-md bg-[var(--pf-panel)] p-[5px] xl:flex`}
                     key={`${title}-${index}`}
                 >
                     <WinnerArt type={type} />
-                    <div className="flex min-w-0 flex-col gap-[3px] text-[10px] text-[#8bb2ee]">
-                        <span className="flex items-center gap-1 truncate text-[9px] text-[#bdd1f2]"><UiIcon name="crown" className="size-3 shrink-0 text-[#ffb400]" />J.*******{stars}</span>
+                    <div className="flex min-w-0 flex-col gap-[3px] text-[10px] text-[var(--pf-muted)]">
+                        <span className="flex items-center gap-1 truncate text-[9px] text-[var(--pf-text)]"><UiIcon name="crown" className="size-3 shrink-0 text-[#ffb400]" />J.*******{stars}</span>
                         <span className="truncate">{title}</span>
-                        <strong className="text-[11px] text-[#39f5ad]">{prize}</strong>
+                        <strong className="text-[11px] text-[var(--pf-accent)]">{prize}</strong>
                     </div>
                 </article>
             ))}
@@ -171,15 +136,21 @@ function WinnerRail() {
 
 function MatchCard({ match, mobile = false }) {
     const { toggle, has } = useBetSlip();
-    const labels = mobile ? ['1', 'X', '2'] : ['1', 'X', '2'];
-    const eventId = `home-${match.home}-${match.away}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const selectOdd = (odd, index) => {
-        const marketId = `${eventId}-1x2-${index}`;
+    const { setCurrentEvent, setPage } = useApp();
+    const labels = ['1', 'X', '2'];
+    const eventId = match.id;
+    const openEvent = () => {
+        setCurrentEvent(eventId);
+        setPage('event');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    const selectOdd = (fromEvent, odd, index) => {
+        fromEvent.stopPropagation();
         toggle({
-            marketId,
+            marketId: `${eventId}-${index}`,
             eventId,
             eventName: `${match.home} vs ${match.away}`,
-            league: match.league || 'UEFA Champions League Qualifying',
+            league: match.league,
             marketType: 'Match Result',
             label: [match.home, 'Draw', match.away][index],
             selection: ['home', 'draw', 'away'][index],
@@ -187,15 +158,24 @@ function MatchCard({ match, mobile = false }) {
         });
     };
     return (
-        <article className={`${mobile ? 'w-[276px] p-[14px_14px_13px] sm:w-[318px]' : 'min-h-[243px] w-[360px] p-[19px_18px_17px]'} shrink-0 rounded-[9px] ${match.featured ? 'bg-[#102445]' : 'bg-[#071328]'}`}>
+        <article
+            className={`${mobile ? 'w-[276px] p-[14px_14px_13px] sm:w-[318px]' : 'min-h-[243px] w-[360px] p-[19px_18px_17px]'} group shrink-0 cursor-pointer rounded-[9px] border bg-[var(--pf-card)] transition duration-300 hover:-translate-y-1 hover:shadow-[var(--pf-shadow)] ${match.featured ? 'border-[var(--pf-accent)]/40' : 'border-[var(--pf-border)] hover:border-[var(--pf-accent)]/40'}`}
+            role="link"
+            tabIndex={0}
+            aria-label={`Open ${match.home} vs ${match.away}`}
+            onClick={openEvent}
+            onKeyDown={(fromEvent) => {
+                if (fromEvent.key !== 'Enter' && fromEvent.key !== ' ') return;
+                fromEvent.preventDefault();
+                openEvent();
+            }}
+        >
             <div className="flex justify-between">
                 <div className="flex min-w-0 flex-col">
-                    <b className="text-[12px] text-[#edf2fb] xl:text-[13px]">{mobile ? match.date : `Today at ${match.time}`}</b>
-                    <span className={`mt-0.5 truncate text-[10px] text-[#7ea9ec] xl:text-[11px] ${mobile ? '' : 'whitespace-nowrap'}`}>
-                        {mobile ? match.league : 'Football  •  UEFA Champions League Qualifying'}
-                    </span>
+                    <b className="text-[12px] text-[var(--pf-text)] xl:text-[13px]">{match.time}</b>
+                    <span className="mt-0.5 truncate text-[10px] text-[var(--pf-muted)] xl:text-[11px]">{match.league}</span>
                 </div>
-                <button className="grid size-7 shrink-0 place-items-center border-0 bg-transparent text-white transition hover:scale-110 hover:text-[#39f5ad]" type="button" aria-label="Add match to favorites">
+                <button className="grid size-7 shrink-0 place-items-center border-0 bg-transparent text-[var(--pf-muted)] transition hover:scale-110 hover:text-[var(--pf-accent)]" onClick={(fromEvent) => fromEvent.stopPropagation()} type="button" aria-label="Add match to favorites">
                     <UiIcon name="star" className={mobile ? 'size-[18px]' : 'size-5'} />
                 </button>
             </div>
@@ -203,24 +183,27 @@ function MatchCard({ match, mobile = false }) {
                 {[match.home, match.away].map((team) => (
                     <p className={`${mobile ? 'h-7 gap-2.5' : 'h-8 gap-3'} m-0 flex min-w-0 items-center`} key={team}>
                         <TeamCrest name={team} className={mobile ? 'size-[22px]' : 'size-6'} />
-                        <b className="truncate text-[15px] text-[#f0f2f7] xl:text-[17px]">{team}</b>
+                        <b className="truncate text-[15px] text-[var(--pf-text)] transition group-hover:text-[var(--pf-accent)] xl:text-[17px]">{team}</b>
                     </p>
                 ))}
             </div>
-            <div className={`${mobile ? 'mt-1.5' : 'mt-2'} flex items-center justify-between text-[12px] text-[#7ea9ec] xl:text-[13px]`}>
+            <div className={`${mobile ? 'mt-1.5' : 'mt-2'} flex items-center justify-between text-[12px] text-[var(--pf-muted)] xl:text-[13px]`}>
                 <span>Match Result</span>
-                <span className="flex items-center gap-2.5 text-[#96bbf5]">
+                <span className="flex items-center gap-2.5">
                     <UiIcon name="chevronRight" className="size-3 rotate-180" />{mobile ? '1/3' : '1/5'}<UiIcon name="chevronRight" className="size-3" />
                 </span>
             </div>
             <div className={`${mobile ? 'mt-2 grid-cols-[repeat(3,minmax(0,1fr))_54px] gap-1.5' : 'mt-[9px] grid-cols-[repeat(3,minmax(0,1fr))_67px] gap-[7px]'} grid`}>
-                {match.odds.map((odd, index) => (
-                    <button aria-pressed={has(`${eventId}-1x2-${index}`)} aria-label={`${[match.home, 'Draw', match.away][index]} at ${odd}`} className={`${mobile ? 'h-[42px]' : 'h-[50px]'} flex flex-col items-center justify-center rounded-[9px] border border-transparent bg-[#0b1931] transition hover:border-[#39f5ad]/50 ${has(`${eventId}-1x2-${index}`) ? 'border-[#39f5ad] bg-[#174b3c] shadow-[0_0_0_1px_rgba(57,245,173,.2)]' : ''}`} onClick={() => selectOdd(odd, index)} type="button" key={odd}>
-                        <small className="text-[10px] text-[#6686b7]">{labels[index]}</small>
-                        <b className={`mt-1 text-[14px] xl:text-[15px] ${has(`${eventId}-1x2-${index}`) ? 'text-[#39f5ad]' : 'text-white xl:text-[#768195]'}`}>{odd}</b>
+                {match.odds.map((odd, index) => {
+                    const selected = has(`${eventId}-${index}`);
+                    return (
+                    <button aria-pressed={selected} aria-label={`${[match.home, 'Draw', match.away][index]} at ${odd}`} className={`${mobile ? 'h-[42px]' : 'h-[50px]'} flex flex-col items-center justify-center rounded-[9px] border bg-[var(--pf-panel)] transition hover:border-[var(--pf-accent)]/50 ${selected ? 'border-[var(--pf-accent)] bg-[var(--pf-accent-soft)]' : 'border-[var(--pf-border)]'}`} onClick={(fromEvent) => selectOdd(fromEvent, odd, index)} type="button" key={odd}>
+                        <small className="text-[10px] text-[var(--pf-muted)]">{labels[index]}</small>
+                        <b className={`mt-1 text-[14px] xl:text-[15px] ${selected ? 'text-[var(--pf-accent)]' : 'text-[var(--pf-text)]'}`}>{Number(odd).toFixed(2)}</b>
                     </button>
-                ))}
-                <button className={`${mobile ? 'h-[42px]' : 'h-[50px]'} rounded-[9px] border-0 bg-[#39f5ad] text-[13px] font-extrabold text-[#061810] xl:text-sm`} type="button">{match.more}</button>
+                    );
+                })}
+                <button className={`${mobile ? 'h-[42px]' : 'h-[50px]'} rounded-[9px] border-0 bg-[var(--pf-accent)] text-[13px] font-extrabold text-[var(--pf-accent-ink)] transition hover:brightness-110 active:scale-95 xl:text-sm`} onClick={(fromEvent) => { fromEvent.stopPropagation(); openEvent(); }} type="button" aria-label={`View all ${match.more} markets`}>+{match.more}</button>
             </div>
         </article>
     );
@@ -230,15 +213,15 @@ function CasinoCard({ game, index, onOpen }) {
     const [name, art, mobile] = game;
     return (
         <button
-            className={`${mobile ? 'block' : 'hidden xl:block'} group relative h-[172px] min-w-[125px] overflow-hidden rounded-[7px] border border-[#263755] bg-[#101c31] p-0 text-left transition duration-200 active:scale-[.98] xl:h-[214px] xl:min-w-[151px] xl:rounded-[9px]`}
+            className={`${mobile ? 'block' : 'hidden xl:block'} group relative h-[172px] min-w-[125px] overflow-hidden rounded-[7px] border border-[var(--pf-border)] bg-[var(--pf-card)] p-0 text-left transition duration-200 active:scale-[.98] xl:h-[214px] xl:min-w-[151px] xl:rounded-[9px]`}
             type="button"
             onClick={() => onOpen(art)}
         >
             <span className={`absolute inset-0 block ${index % 3 === 1 ? 'hue-rotate-15 saturate-125' : index % 3 === 2 ? '-hue-rotate-15 saturate-150' : ''}`}>
                 {THUMBS[art]}
             </span>
-            <span className="absolute right-1.5 top-1.5 z-[2] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,.9)]"><UiIcon name="star" className="size-5" /></span>
-            <span className="absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-[#020810] to-transparent px-2.5 pb-2.5 pt-6 text-[12px] font-extrabold text-white [text-shadow:0_1px_2px_#000] xl:text-[13px]">
+            <span className="absolute right-1.5 top-1.5 z-[2] text-[var(--pf-text)] drop-shadow-[0_1px_3px_rgba(0,0,0,.9)]"><UiIcon name="star" className="size-5" /></span>
+            <span className="absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-[#020810] to-transparent px-2.5 pb-2.5 pt-6 text-[12px] font-extrabold text-[var(--pf-text)] [text-shadow:0_1px_2px_#000] xl:text-[13px]">
                 {name}
             </span>
         </button>
@@ -248,9 +231,9 @@ function CasinoCard({ game, index, onOpen }) {
 function SectionControls({ label, onViewAll }) {
     return (
         <div className="flex gap-1.5 xl:gap-[5px]">
-            <button className="grid size-8 place-items-center rounded-full border-0 bg-[#10203b] text-white transition hover:bg-[#17304f] active:scale-90 xl:size-[42px]" type="button" aria-label={`Previous ${label}`}><UiIcon name="chevronRight" className="size-4 rotate-180 xl:size-5" /></button>
-            <button className="grid size-8 place-items-center rounded-full border-0 bg-[#10203b] text-white transition hover:bg-[#17304f] active:scale-90 xl:size-[42px]" type="button" aria-label={`Next ${label}`}><UiIcon name="chevronRight" className="size-4 xl:size-5" /></button>
-            <button className="h-8 min-w-[70px] rounded-[15px] border-0 bg-[#39f5ad] px-2 text-[13px] font-bold text-[#03150e] transition active:scale-95 xl:h-[42px] xl:min-w-[82px] xl:rounded-[19px] xl:px-3 xl:text-base" onClick={onViewAll} type="button">View all</button>
+            <button className="grid size-8 place-items-center rounded-full border-0 bg-[var(--pf-card)] text-[var(--pf-text)] transition hover:bg-[var(--pf-hover)] active:scale-90 xl:size-[42px]" type="button" aria-label={`Previous ${label}`}><UiIcon name="chevronRight" className="size-4 rotate-180 xl:size-5" /></button>
+            <button className="grid size-8 place-items-center rounded-full border-0 bg-[var(--pf-card)] text-[var(--pf-text)] transition hover:bg-[var(--pf-hover)] active:scale-90 xl:size-[42px]" type="button" aria-label={`Next ${label}`}><UiIcon name="chevronRight" className="size-4 xl:size-5" /></button>
+            <button className="h-8 min-w-[70px] rounded-[15px] border-0 bg-[var(--pf-accent)] px-2 text-[13px] font-bold text-[var(--pf-accent-ink)] transition active:scale-95 xl:h-[42px] xl:min-w-[82px] xl:rounded-[19px] xl:px-3 xl:text-base" onClick={onViewAll} type="button">View all</button>
         </div>
     );
 }
@@ -259,7 +242,7 @@ function CasinoRailSection({ section, onOpen, onViewAll, orderClass = '' }) {
     return (
         <section className={`${orderClass} mx-1 mt-5 xl:mx-0 xl:mt-[23px]`}>
             <div className="flex h-9 items-start justify-between xl:h-[61px]">
-                <h2 className="m-0 text-[18px] font-extrabold text-white xl:text-[22px] xl:tracking-[-.4px]">{section.title}</h2>
+                <h2 className="m-0 text-[18px] font-extrabold text-[var(--pf-text)] xl:text-[22px] xl:tracking-[-.4px]">{section.title}</h2>
                 <SectionControls label={section.title} onViewAll={onViewAll} />
             </div>
             <div className="no-scrollbar -mx-1 flex h-[178px] gap-1.5 overflow-x-auto px-1 pb-1 xl:mx-0 xl:h-[220px] xl:gap-2.5 xl:overflow-hidden xl:px-0">
@@ -278,12 +261,12 @@ function HomeFooter({ go }) {
         ['Discord', BrandDiscord],
     ];
     return (
-        <footer className="order-6 mx-1 mt-8 border-t border-[#263752] pb-8 pt-5 text-[#8fb0df] xl:mx-0 xl:mt-10">
+        <footer className="order-6 mx-1 mt-8 border-t border-[var(--pf-border)] pb-8 pt-5 text-[var(--pf-muted)] xl:mx-0 xl:mt-10">
             <div className="flex items-center justify-between gap-4">
                 <Brand compact />
                 <div className="flex gap-2">
                     {socials.map(([label, Icon]) => (
-                        <a className="grid size-8 place-items-center rounded-full bg-[#10203b] text-white transition hover:bg-[#39f5ad] hover:text-[#03150e]" href="#" aria-label={label} key={label}>
+                        <a className="grid size-8 place-items-center rounded-full bg-[var(--pf-card)] text-white transition hover:bg-[var(--pf-accent)] hover:text-[var(--pf-accent-ink)]" href="#" aria-label={label} key={label}>
                             <Icon size={15} />
                         </a>
                     ))}
@@ -292,7 +275,7 @@ function HomeFooter({ go }) {
             <p className="mt-4 max-w-md text-[12px] leading-relaxed">
                 Afribet brings sports, casino, live games and instant rewards into one fast betting platform.
             </p>
-            <nav className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-bold text-white" aria-label="Footer links">
+            <nav className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-bold text-[var(--pf-text)]" aria-label="Footer links">
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('promotions')} type="button">About</button>
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('support')} type="button">Support</button>
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('sports')} type="button">Sports</button>
@@ -313,28 +296,28 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen overflow-hidden bg-[#030810] pb-[63px] text-white xl:pb-0">
+        <div className="min-h-screen overflow-hidden bg-[var(--pf-bg)] pb-[63px] text-[var(--pf-text)] xl:pb-0">
             <main className="flex min-h-screen flex-col xl:px-[23px] xl:pb-7 xl:pt-[68px]">
                 <WinnerRail />
 
                 <section className="order-1 mx-5 mt-[27px] xl:order-2 xl:mx-0 xl:mt-[59px]">
                     <div className="flex h-[44px] items-start justify-between xl:h-[42px]">
-                        <h1 className="m-0 text-[18px] font-extrabold text-white xl:text-[22px] xl:tracking-[-.4px]">Top Events</h1>
-                        <button className="h-[40px] min-w-[76px] rounded-[17px] border-0 bg-[#39f5ad] px-2.5 text-[14px] font-bold text-[#03150e] xl:h-[42px] xl:min-w-[82px] xl:px-3 xl:text-base" onClick={() => go('sports')} type="button">View all</button>
+                        <h1 className="m-0 text-[18px] font-extrabold text-[var(--pf-text)] xl:text-[22px] xl:tracking-[-.4px]">Top Events</h1>
+                        <button className="h-[40px] min-w-[76px] rounded-[17px] border-0 bg-[var(--pf-accent)] px-2.5 text-[14px] font-bold text-[var(--pf-accent-ink)] xl:h-[42px] xl:min-w-[82px] xl:px-3 xl:text-base" onClick={() => go('sports')} type="button">View all</button>
                     </div>
                     <div className="no-scrollbar flex h-[60px] items-start gap-3 overflow-x-auto xl:h-[58px] xl:gap-[5px]">
                         {SPORTS.map(([icon, name]) => (
-                            <button className={`flex h-[40px] shrink-0 items-center gap-1.5 rounded-[18px] border-0 bg-transparent px-2 text-[14px] font-bold text-[#e4e7eb] transition xl:h-[43px] xl:text-base ${activeSport === name ? 'bg-[#39f5ad] px-3 text-[#02140d]' : 'hover:text-white'}`} onClick={() => setActiveSport(name)} type="button" key={name} aria-pressed={activeSport === name}>
+                            <button className={`flex h-[40px] shrink-0 items-center gap-1.5 rounded-[18px] border-0 bg-transparent px-2 text-[14px] font-bold transition xl:h-[43px] xl:text-base ${activeSport === name ? 'bg-[var(--pf-accent)] px-3 text-[var(--pf-accent-ink)]' : 'text-[var(--pf-text)] hover:bg-[var(--pf-panel)]'}`} onClick={() => setActiveSport(name)} type="button" key={name} aria-pressed={activeSport === name}>
                                 <SportIcon type={icon} className="size-6 shrink-0" />{name}
                             </button>
                         ))}
                     </div>
                     <div className="overflow-hidden">
                         <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 pb-1 xl:hidden">
-                            {MOBILE_MATCHES.map((match) => <MatchCard match={match} mobile key={`${match.date}-${match.home}`} />)}
+                            {TOP_EVENTS.slice(0, 6).map((match) => <MatchCard match={match} mobile key={match.id} />)}
                         </div>
                         <div className="hidden gap-[17px] xl:flex">
-                            {DESKTOP_MATCHES.map((match) => <MatchCard match={match} key={`${match.time}-${match.home}`} />)}
+                            {TOP_EVENTS.slice(0, 5).map((match) => <MatchCard match={match} key={match.id} />)}
                         </div>
                     </div>
                 </section>

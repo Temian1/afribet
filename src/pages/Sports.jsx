@@ -14,6 +14,27 @@ function useOpenEvent() {
     };
 }
 
+/* Makes a whole card/row open the event while staying keyboard reachable. */
+function openEventProps(open, label) {
+    return {
+        role: 'link',
+        tabIndex: 0,
+        'aria-label': `Open ${label}`,
+        onClick: open,
+        onKeyDown: (fromEvent) => {
+            if (fromEvent.key !== 'Enter' && fromEvent.key !== ' ') return;
+            fromEvent.preventDefault();
+            open();
+        },
+    };
+}
+
+/** Odds and favourite controls sit inside a clickable card — don't navigate. */
+const dontNavigate = (handler) => (fromEvent) => {
+    fromEvent.stopPropagation();
+    handler();
+};
+
 // Odds grid shared by the desktop header row and every event row so the columns stay aligned.
 const ODDS_GRID = 'grid grid-cols-[repeat(4,minmax(180px,1fr))_74px] items-center gap-2 px-3 2xl:gap-4 2xl:px-4';
 const ROW_GRID = 'grid grid-cols-[320px_minmax(900px,1fr)]';
@@ -72,9 +93,9 @@ function MarketRailControls({ canGoBack, canGoForward, onBack, onForward }) {
 
 function NavButton({ active, icon, label, onClick }) {
     return (
-        <button className={`relative flex h-[53px] shrink-0 items-center gap-2 border-0 bg-transparent px-2 text-[14px] font-extrabold transition sm:text-[15px] ${active ? 'text-[var(--pf-text)]' : 'text-slate-200 hover:text-[var(--pf-accent)]'}`} onClick={onClick} type="button">
+        <button className={`relative flex h-[53px] shrink-0 items-center gap-2 border-0 bg-transparent px-2 text-[14px] font-extrabold transition sm:text-[15px] ${active ? 'text-[var(--pf-text)]' : 'text-[var(--pf-muted)] hover:text-[var(--pf-accent)]'}`} onClick={onClick} type="button">
             {icon}{label}
-            {active ? <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-t-full bg-[#39f5ad]" /> : null}
+            {active ? <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-t-full bg-[var(--pf-accent)]" /> : null}
         </button>
     );
 }
@@ -102,7 +123,7 @@ function SportsControls({ activeMode, setActiveMode }) {
                 <div className="mr-2 hidden shrink-0 gap-1 xl:flex">
                     <button className="sport-square" type="button" aria-label="Home"><UiIcon name="home" className="size-[18px]" /></button>
                     <button className="sport-square" type="button" aria-label="Live now"><UiIcon name="live" className="size-[18px]" /></button>
-                    <button className="sport-square bg-[#39f5ad] text-[var(--pf-accent-ink)]" type="button" aria-label="Starting soon"><UiIcon name="stopwatch" className="size-[18px]" /></button>
+                    <button className="sport-square bg-[var(--pf-accent)] text-[var(--pf-accent-ink)]" type="button" aria-label="Starting soon"><UiIcon name="stopwatch" className="size-[18px]" /></button>
                     <button className="sport-square" type="button" aria-label="Top competitions"><UiIcon name="crown" className="size-[18px]" /></button>
                     <button className="sport-square" type="button" aria-label="Favourites"><UiIcon name="star" className="size-[18px]" /></button>
                 </div>
@@ -112,7 +133,7 @@ function SportsControls({ activeMode, setActiveMode }) {
                         <span className="absolute right-0.5 top-1.5 rounded-full bg-[var(--pf-panel)] px-1 text-[9px] text-[var(--pf-text)]">{count}</span>
                     </button>
                 ))}
-                <button className="sticky right-1 ml-auto grid size-9 min-w-9 shrink-0 place-items-center rounded-[7px] border-0 bg-[#39f5ad] text-[var(--pf-accent-ink)] shadow-[-12px_0_16px_#071226]" type="button" aria-label="More sports"><UiIcon name="chevronDown" /></button>
+                <button className="sticky right-1 ml-auto grid size-9 min-w-9 shrink-0 place-items-center rounded-[7px] border-0 bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[-12px_0_16px_#071226]" type="button" aria-label="More sports"><UiIcon name="chevronDown" /></button>
             </div>
 
             <div className="flex h-[54px] items-center gap-2 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-2 xl:mx-5 xl:mt-[31px] xl:rounded-[9px] xl:border">
@@ -121,7 +142,7 @@ function SportsControls({ activeMode, setActiveMode }) {
                 </button>
                 <div className="no-scrollbar flex min-w-0 flex-1 gap-1 overflow-x-auto">
                     {LEAGUES.map(([id, label]) => (
-                        <button className={`flex h-[43px] shrink-0 items-center gap-2 rounded-[7px] border-0 px-3 text-[12px] font-bold transition xl:text-[13px] ${league === id ? 'bg-[#39f5ad] text-[var(--pf-accent-ink)]' : 'bg-transparent text-white hover:bg-white/5'}`} onClick={() => setLeague(id)} type="button" key={id} aria-pressed={league === id}>
+                        <button className={`flex h-[43px] shrink-0 items-center gap-2 rounded-[7px] border-0 px-3 text-[12px] font-bold transition xl:text-[13px] ${league === id ? 'bg-[var(--pf-accent)] text-[var(--pf-accent-ink)]' : 'bg-transparent text-[var(--pf-text)] hover:bg-[var(--pf-panel)]'}`} onClick={() => setLeague(id)} type="button" key={id} aria-pressed={league === id}>
                             {id === 'popular' ? <UiIcon name="flame" className="size-[18px]" /> : <SportIcon type="football" className="size-[18px] opacity-75" />}
                             {label}
                         </button>
@@ -137,7 +158,7 @@ function StarButton({ label }) {
     return (
         <button
             className={`grid size-7 shrink-0 place-items-center border-0 bg-transparent transition hover:scale-110 hover:text-[var(--pf-accent)] ${active ? 'text-[#ffb400]' : 'text-[var(--pf-text)]'}`}
-            onClick={() => setActive((value) => !value)}
+            onClick={dontNavigate(() => setActive((value) => !value))}
             type="button"
             aria-pressed={active}
             aria-label={`${active ? 'Remove' : 'Add'} ${label} ${active ? 'from' : 'to'} favourites`}
@@ -152,7 +173,10 @@ function TopEventCard({ event }) {
     const openEvent = useOpenEvent();
     const selectOdd = (odd, index) => toggle({ marketId: `${event.id}-${index}`, eventId: event.id, eventName: `${event.home} vs ${event.away}`, league: event.league, marketType: 'Match Result', label: ['Home', 'Draw', 'Away'][index], selection: ['home', 'draw', 'away'][index], odds: odd });
     return (
-        <article className="w-[288px] shrink-0 rounded-[9px] bg-[var(--pf-surface)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,.02)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_15px_40px_rgba(0,0,0,.22)] sm:w-[330px] sm:p-[17px] xl:w-[360px]">
+        <article
+            className="group w-[288px] shrink-0 cursor-pointer rounded-[9px] border border-[var(--pf-border)] bg-[var(--pf-card)] p-4 transition duration-300 hover:-translate-y-1 hover:border-[var(--pf-accent)]/40 hover:shadow-[var(--pf-shadow)] sm:w-[330px] sm:p-[17px] xl:w-[360px]"
+            onClick={() => openEvent(event.id)}
+        >
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                     <b className="block text-[13px]">{event.time}</b>
@@ -160,13 +184,13 @@ function TopEventCard({ event }) {
                 </div>
                 <StarButton label={`${event.home} vs ${event.away}`} />
             </div>
-            <button className="mt-4 block w-full space-y-2.5 border-0 bg-transparent p-0 text-left" onClick={() => openEvent(event.id)} type="button" aria-label={`Open ${event.home} vs ${event.away}`}>
+            <div className="mt-4 space-y-2.5">
                 {[event.home, event.away].map((team) => (
                     <span className="flex min-w-0 items-center gap-3 text-[15px] font-extrabold text-[var(--pf-text)] transition group-hover:text-[var(--pf-accent)] sm:text-[17px]" key={team}>
-                        <TeamCrest name={team} className="size-6" /><span className="truncate hover:text-[var(--pf-accent)]">{team}</span>
+                        <TeamCrest name={team} className="size-6" /><span className="truncate">{team}</span>
                     </span>
                 ))}
-            </button>
+            </div>
             <div className="mt-4 flex items-center justify-between text-[13px] text-[var(--pf-muted)]">
                 <span>Match Result</span>
                 <span className="flex items-center gap-3">
@@ -181,7 +205,7 @@ function TopEventCard({ event }) {
                             aria-pressed={selected}
                             aria-label={`${['Home win', 'Draw', 'Away win'][index]} at ${odd.toFixed(2)}`}
                             className={`flex h-[50px] flex-col items-center justify-center rounded-[8px] border border-transparent bg-[var(--pf-card)] text-[var(--pf-text)] transition hover:border-[var(--pf-accent)]/50 ${selected ? 'border-[var(--pf-accent)] bg-[var(--pf-accent-soft)] text-[var(--pf-accent)] shadow-[0_0_0_1px_rgba(57,245,173,.25)]' : ''}`}
-                            onClick={() => selectOdd(odd, index)}
+                            onClick={dontNavigate(() => selectOdd(odd, index))}
                             type="button"
                             key={odd}
                         >
@@ -189,7 +213,7 @@ function TopEventCard({ event }) {
                         </button>
                     );
                 })}
-                <button className="h-[50px] rounded-[8px] border-0 bg-[#39f5ad] text-[13px] font-bold text-[var(--pf-accent-ink)] transition hover:brightness-110 active:scale-95 sm:text-[14px]" onClick={() => openEvent(event.id)} type="button" aria-label={`View all ${event.more} markets`}>+{event.more}</button>
+                <button className="h-[50px] rounded-[8px] border-0 bg-[var(--pf-accent)] text-[13px] font-bold text-[var(--pf-accent-ink)] transition hover:brightness-110 active:scale-95 sm:text-[14px]" onClick={dontNavigate(() => openEvent(event.id))} type="button" aria-label={`View all ${event.more} markets`}>+{event.more}</button>
             </div>
         </article>
     );
@@ -221,7 +245,7 @@ function OddCell({ values, event, marketIndex }) {
                         aria-label={numeric ? `${meta.type}: ${label} at ${value.toFixed(2)}` : `${meta.type} line ${value}`}
                         className={`flex items-center justify-center border-0 border-r border-[var(--pf-border)] bg-transparent text-center text-[13px] font-bold text-[var(--pf-text)] transition last:border-0 hover:bg-[var(--pf-hover)] disabled:text-[var(--pf-muted)] disabled:hover:bg-transparent ${has(marketId) ? 'bg-[var(--pf-accent-soft)] text-[var(--pf-accent)]' : ''}`}
                         disabled={!numeric}
-                        onClick={() => numeric && toggle({ marketId, eventId: event.id, eventName: `${event.home} vs ${event.away}`, league: event.league, marketType: meta.type, label, selection: `${marketIndex}-${index}`, odds: value })}
+                        onClick={dontNavigate(() => numeric && toggle({ marketId, eventId: event.id, eventName: `${event.home} vs ${event.away}`, league: event.league, marketType: meta.type, label, selection: `${marketIndex}-${index}`, odds: value }))}
                         type="button"
                         key={`${value}-${index}`}
                     >
@@ -236,7 +260,7 @@ function OddCell({ values, event, marketIndex }) {
 function UpcomingRow({ event }) {
     const openEvent = useOpenEvent();
     return (
-        <div className={`${ROW_GRID} min-h-[89px] border-t border-[var(--pf-border)] bg-[var(--pf-surface)] transition hover:bg-[var(--pf-card)]`}>
+        <div className={`${ROW_GRID} min-h-[89px] cursor-pointer border-t border-[var(--pf-border)] bg-[var(--pf-surface)] transition hover:bg-[var(--pf-card)]`} {...openEventProps(() => openEvent(event.id), `${event.home} vs ${event.away}`)}>
             <div className="sticky left-0 z-10 min-w-0 bg-[var(--pf-surface)] px-3 py-2 shadow-[10px_0_18px_rgba(3,8,16,.18)]">
                 <div className="flex items-center gap-1.5 text-[10px] text-[var(--pf-muted)]">
                     <span className="shrink-0 rounded-full bg-[var(--pf-panel)] px-2 py-0.5">{event.region}</span>
@@ -244,17 +268,17 @@ function UpcomingRow({ event }) {
                     <span className="ml-auto shrink-0">{event.time}</span>
                     <StarButton label={`${event.home} vs ${event.away}`} />
                 </div>
-                <button className="mt-2 block w-full space-y-2 border-0 bg-transparent p-0 text-left text-[13px] font-bold" onClick={() => openEvent(event.id)} type="button" aria-label={`Open ${event.home} vs ${event.away}`}>
+                <div className="mt-2 space-y-2 text-[13px] font-bold">
                     {[event.home, event.away].map((team) => (
                         <span className="flex min-w-0 items-center gap-2 text-[var(--pf-text)] transition hover:text-[var(--pf-accent)]" key={team}>
                             <TeamCrest name={team} className="size-5" /><span className="truncate">{team}</span>
                         </span>
                     ))}
-                </button>
+                </div>
             </div>
             <div className={`${ODDS_GRID} border-l border-[var(--pf-border)]`}>
                 {event.markets.map((values, index) => <OddCell values={values} event={event} marketIndex={index} key={index} />)}
-                <button className="flex h-[51px] w-full items-center justify-center gap-1 rounded-[9px] border-0 bg-[#39f5ad] text-[12px] font-bold text-[var(--pf-accent-ink)] transition hover:brightness-110 active:scale-95" onClick={() => openEvent(event.id)} type="button" aria-label={`View all ${event.more} markets`}>
+                <button className="flex h-[51px] w-full items-center justify-center gap-1 rounded-[9px] border-0 bg-[var(--pf-accent)] text-[12px] font-bold text-[var(--pf-accent-ink)] transition hover:brightness-110 active:scale-95" onClick={dontNavigate(() => openEvent(event.id))} type="button" aria-label={`View all ${event.more} markets`}>
                     +{event.more}<UiIcon name="chevronRight" className="size-3" />
                 </button>
             </div>
@@ -276,24 +300,24 @@ function MobileUpcomingCard({ event }) {
         odds: odd,
     });
     return (
-        <article className={`${MOBILE_GRID} border-b border-[var(--pf-border)] bg-[var(--pf-surface)]`}>
+        <article className={`${MOBILE_GRID} cursor-pointer border-b border-[var(--pf-border)] bg-[var(--pf-surface)] transition active:bg-[var(--pf-card)]`} {...openEventProps(() => openEvent(event.id), `${event.home} vs ${event.away}`)}>
             <div className="min-w-0 p-3">
                 <div className="flex items-center gap-1 text-[11px] text-[var(--pf-muted)]">
                     <span className="truncate">{event.time}</span>
                     <span className="ml-auto shrink-0"><StarButton label={`${event.home} vs ${event.away}`} /></span>
-                    <button className="shrink-0 rounded-[5px] border-0 bg-[#39f5ad] px-2 py-1 text-[10px] font-bold text-[var(--pf-accent-ink)] active:scale-90" onClick={() => openEvent(event.id)} type="button" aria-label={`View all ${event.more} markets`}>+{event.more}</button>
+                    <button className="shrink-0 rounded-[5px] border-0 bg-[var(--pf-accent)] px-2 py-1 text-[10px] font-bold text-[var(--pf-accent-ink)] active:scale-90" onClick={dontNavigate(() => openEvent(event.id))} type="button" aria-label={`View all ${event.more} markets`}>+{event.more}</button>
                 </div>
                 <div className="mt-1 flex min-w-0 gap-1 text-[10px] text-[var(--pf-muted)]">
                     <span className="shrink-0 rounded-full bg-[var(--pf-panel)] px-2 py-1">{event.region}</span>
                     <span className="truncate rounded-full bg-[var(--pf-panel)] px-2 py-1">{event.league}</span>
                 </div>
-                <button className="mt-3 block w-full space-y-2 border-0 bg-transparent p-0 text-left text-[13px] font-bold" onClick={() => openEvent(event.id)} type="button" aria-label={`Open ${event.home} vs ${event.away}`}>
+                <div className="mt-3 space-y-2 text-[13px] font-bold">
                     {[event.home, event.away].map((team) => (
                         <span className="flex min-w-0 items-center gap-2 text-[var(--pf-text)]" key={team}>
                             <TeamCrest name={team} className="size-5" /><span className="truncate">{team}</span>
                         </span>
                     ))}
-                </button>
+                </div>
             </div>
             <div className="min-w-0 self-center p-2">
                 <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-[9px]" aria-label={`Swipe odds markets for ${event.home} vs ${event.away}`}>
@@ -314,7 +338,7 @@ function MobileUpcomingCard({ event }) {
                                             aria-label={numeric ? `${MARKET_META[marketIndex].type}: ${MARKET_META[marketIndex].labels[index]} at ${value.toFixed(2)}` : `${MARKET_META[marketIndex].type} line ${value}`}
                                             className={`flex items-center justify-center border-0 border-r border-[var(--pf-border)] bg-transparent text-center text-[12px] font-bold text-[var(--pf-text)] transition last:border-0 disabled:text-[var(--pf-muted)] ${selected ? 'bg-[var(--pf-accent-soft)] text-[var(--pf-accent)]' : 'hover:bg-[var(--pf-hover)]'}`}
                                             disabled={!numeric}
-                                            onClick={() => numeric && selectOdd(value, marketIndex, index)}
+                                            onClick={dontNavigate(() => numeric && selectOdd(value, marketIndex, index))}
                                             type="button"
                                             key={`${value}-${index}`}
                                         >
@@ -341,7 +365,7 @@ export default function Sports() {
             <section className="mt-3 px-3 sm:px-4 xl:mt-[18px] xl:px-5">
                 <div className="flex h-[47px] items-center justify-between gap-3">
                     <SectionTitle />
-                    <button className="h-[38px] shrink-0 rounded-[19px] border-0 bg-[#39f5ad] px-4 text-[14px] font-bold text-[var(--pf-accent-ink)] transition hover:shadow-[0_0_24px_rgba(57,245,173,.25)] active:scale-95 sm:h-[42px] sm:text-[16px]" type="button">View all</button>
+                    <button className="h-[38px] shrink-0 rounded-[19px] border-0 bg-[var(--pf-accent)] px-4 text-[14px] font-bold text-[var(--pf-accent-ink)] transition hover:shadow-[0_0_24px_rgba(57,245,173,.25)] active:scale-95 sm:h-[42px] sm:text-[16px]" type="button">View all</button>
                 </div>
                 <div className="no-scrollbar -mx-3 mt-2 flex gap-3 overflow-x-auto px-3 pb-2 sm:-mx-4 sm:gap-[18px] sm:px-4 xl:mx-0 xl:px-0">
                     {TOP_EVENTS.map((event) => <TopEventCard event={event} key={event.id} />)}

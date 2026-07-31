@@ -15,7 +15,7 @@ function Item({ item, open, onToggle }) {
         <div className={`rounded-xl border transition ${
             open
                 ? 'border-purple-l/50 bg-purple/10 shadow-lg shadow-purple/10'
-                : 'border-slate-200 bg-white dark:border-white/10 dark:bg-white/[.03]'
+                : 'border-[var(--pf-border)] bg-white dark:bg-white/[.03]'
         }`}>
             <button onClick={onToggle} className="flex w-full items-center justify-between gap-4 p-4 text-left" type="button">
                 <span className="font-heading text-[15px] font-bold text-slate-900 dark:text-slate-100">{item.q}</span>

@@ -61,7 +61,7 @@ export default function Wallet() {
                 </div>
 
                 {/* Balance card */}
-                <div className="relative mt-6 overflow-hidden rounded-3xl border border-purple/20 bg-gradient-to-br from-purple/15 via-transparent to-gold/10 p-7 dark:border-white/10">
+                <div className="relative mt-6 overflow-hidden rounded-3xl border border-purple/20 bg-gradient-to-br from-purple/15 via-transparent to-gold/10 p-7">
                     <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-purple/20 blur-3xl" />
                     <p className="font-heading text-xs font-bold uppercase tracking-[2px] text-slate-500">Available Balance</p>
                     <p className="mt-1 font-display text-4xl font-extrabold tabular-nums tracking-tight text-slate-950 dark:text-white sm:text-5xl">
@@ -82,21 +82,21 @@ export default function Wallet() {
                         <div className="grid grid-cols-4 gap-2">
                             {METHODS.map((m) => (
                                 <button key={m.id} onClick={() => setMethod(m.id)} type="button" aria-pressed={method === m.id}
-                                    className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-bold transition ${method === m.id ? 'border-purple bg-purple/12 text-purple-d shadow-md shadow-purple/10 dark:bg-purple/20 dark:text-purple-l' : 'border-slate-200 text-slate-500 hover:border-purple/40 dark:border-white/10 dark:text-slate-400'}`}>
+                                    className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-bold transition ${method === m.id ? 'border-purple bg-purple/12 text-purple-d shadow-md shadow-purple/10 dark:bg-purple/20 dark:text-purple-l' : 'border-[var(--pf-border)] text-slate-500 hover:border-purple/40 dark:text-slate-400'}`}>
                                     <span className="text-xl">{m.icon}</span>{m.label}
                                 </button>
                             ))}
                         </div>
 
                         <label className="field-label mt-5" htmlFor="wallet-amount">Amount</label>
-                        <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 transition focus-within:border-purple-l focus-within:ring-4 focus-within:ring-purple/10 dark:border-white/10 dark:bg-white/[.04]">
+                        <div className="flex items-center rounded-xl border border-[var(--pf-border)] bg-slate-50 px-3.5 transition focus-within:border-purple-l focus-within:ring-4 focus-within:ring-purple/10 dark:bg-white/[.04]">
                             <span className="font-display text-lg font-bold text-amber-600 dark:text-gold-l">$</span>
                             <input id="wallet-amount" type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-transparent px-2 py-3 font-display text-lg tabular-nums outline-none" />
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">
                             {QUICK.map((q) => (
                                 <button key={q} onClick={() => setAmount(q)} type="button" aria-pressed={Number(amount) === q}
-                                    className={`rounded-xl border px-3.5 py-1.5 font-heading text-sm font-bold tabular-nums transition ${Number(amount) === q ? 'border-gold bg-gold/15 text-amber-700 dark:text-gold-l' : 'border-slate-200 text-slate-600 hover:border-gold/50 dark:border-white/10 dark:text-slate-300'}`}>
+                                    className={`rounded-xl border px-3.5 py-1.5 font-heading text-sm font-bold tabular-nums transition ${Number(amount) === q ? 'border-gold bg-gold/15 text-amber-700 dark:text-gold-l' : 'border-[var(--pf-border)] text-slate-600 hover:border-gold/50 dark:text-slate-300'}`}>
                                     ${q}
                                 </button>
                             ))}
@@ -140,7 +140,7 @@ export default function Wallet() {
                                 const displayAmt = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount ?? 0);
                                 const time = t.time ?? (t.created_at ? new Date(t.created_at).toLocaleDateString() : '');
                                 return (
-                                    <div key={t.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-3.5 py-3 transition hover:border-slate-200 dark:border-white/[.05] dark:hover:border-white/10">
+                                    <div key={t.id} className="flex items-center justify-between gap-3 rounded-xl border border-[var(--pf-border)] px-3.5 py-3 transition hover:border-[var(--pf-border)] dark:hover:border-white/10">
                                         <div className="flex min-w-0 items-center gap-3">
                                             <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black uppercase ${meta.chip}`}>
                                                 {meta.sign}

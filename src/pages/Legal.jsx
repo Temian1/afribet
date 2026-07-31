@@ -41,7 +41,7 @@ export default function Legal({ section = 'about' }) {
                 <div className="mb-8 flex flex-wrap gap-1.5">
                     {Object.entries(SECTIONS).map(([key, s]) => (
                         <button key={key} onClick={() => setActive(key)} type="button" aria-pressed={active === key}
-                            className={`chip border-slate-200 dark:border-white/10 ${active === key ? 'chip-active' : ''}`}>
+                            className={`chip border-[var(--pf-border)] ${active === key ? 'chip-active' : ''}`}>
                             {s.title}
                         </button>
                     ))}

@@ -26,7 +26,7 @@ export default function NotificationBell() {
         <div className="relative" ref={ref}>
             <button
                 onClick={() => setOpen((value) => !value)}
-                className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 transition hover:border-purple-l/50 hover:text-purple-d dark:border-white/10 dark:bg-white/[.04] dark:text-slate-300 dark:hover:text-purple-l"
+                className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--pf-border)] bg-white text-slate-600 transition hover:border-purple-l/50 hover:text-purple-d dark:bg-white/[.04] dark:text-slate-300 dark:hover:text-purple-l"
                 aria-label="Notifications"
                 type="button"
             >
@@ -39,8 +39,8 @@ export default function NotificationBell() {
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-[min(360px,calc(100vw-24px))] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/15 dark:border-white/10 dark:bg-ink-2 dark:shadow-black/50">
-                    <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-white/10">
+                <div className="absolute right-0 mt-2 w-[min(360px,calc(100vw-24px))] overflow-hidden rounded-2xl border border-[var(--pf-border)] bg-white shadow-2xl shadow-slate-900/15 dark:bg-ink-2 dark:shadow-black/50">
+                    <div className="flex items-center justify-between border-b border-[var(--pf-border)] px-4 py-3">
                         <h3 className="font-heading text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">Notifications</h3>
                         {items.length > 0 && <button onClick={markAllRead} className="text-xs text-purple-d hover:underline dark:text-purple-l" type="button">Mark all read</button>}
                     </div>
@@ -54,7 +54,7 @@ export default function NotificationBell() {
                             const meta = TYPE_META[item.type] || TYPE_META.system;
                             const Icon = meta.icon;
                             return (
-                                <button key={item.id} onClick={() => markRead(item.id)} className="flex w-full gap-3 border-b border-slate-200 px-4 py-3 text-left transition hover:bg-slate-50 last:border-0 dark:border-white/10 dark:hover:bg-white/[.04]" type="button">
+                                <button key={item.id} onClick={() => markRead(item.id)} className="flex w-full gap-3 border-b border-[var(--pf-border)] px-4 py-3 text-left transition hover:bg-slate-50 last:border-0 dark:hover:bg-white/[.04]" type="button">
                                     <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${meta.cls}`}><Icon size={17} /></span>
                                     <span className="min-w-0 flex-1">
                                         <span className="block truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{item.title}</span>
@@ -65,7 +65,7 @@ export default function NotificationBell() {
                             );
                         })}
                     </div>
-                    {items.length > 0 && <button onClick={clearAll} className="w-full border-t border-slate-200 py-2.5 text-xs font-bold uppercase tracking-wider text-slate-500 transition hover:text-neon-red dark:border-white/10" type="button">Clear all</button>}
+                    {items.length > 0 && <button onClick={clearAll} className="w-full border-t border-[var(--pf-border)] py-2.5 text-xs font-bold uppercase tracking-wider text-slate-500 transition hover:text-neon-red" type="button">Clear all</button>}
                 </div>
             )}
         </div>

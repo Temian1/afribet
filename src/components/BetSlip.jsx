@@ -123,7 +123,7 @@ export default function BetSlip({ onLogin }) {
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
-                    className="animate-scale-in fixed bottom-[76px] left-4 z-[1300] flex items-center gap-2.5 rounded-2xl bg-gradient-to-b from-purple-l to-purple-d py-3 pl-4 pr-5 font-heading text-sm font-bold text-[#03150e] shadow-xl shadow-purple/20 transition hover:-translate-y-0.5 hover:brightness-110 sm:left-6 xl:bottom-6"
+                    className="animate-scale-in fixed bottom-[76px] left-4 z-[1300] flex items-center gap-2.5 rounded-2xl bg-gradient-to-b from-purple-l to-purple-d py-3 pl-4 pr-5 font-heading text-sm font-bold text-[var(--pf-accent-ink)] shadow-xl shadow-purple/20 transition hover:-translate-y-0.5 hover:brightness-110 sm:left-6 xl:bottom-6"
                     aria-label={`Open bet slip (${items.length} selections)`}
                 >
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs font-black tabular-nums">{items.length}</span>
@@ -135,13 +135,13 @@ export default function BetSlip({ onLogin }) {
             {/* Slip panel */}
             {open && (
                 <aside
-                    className="animate-fade-up fixed inset-x-0 bottom-[63px] z-[1300] flex max-h-[80vh] flex-col overflow-hidden rounded-t-3xl border border-[#39f5ad]/20 bg-ink-2 shadow-[0_-20px_60px_rgba(0,0,0,.45),0_0_40px_rgba(57,245,173,.06)] sm:inset-x-auto sm:left-6 sm:w-[380px] sm:rounded-3xl xl:bottom-6"
+                    className="animate-fade-up fixed inset-x-0 bottom-[63px] z-[1300] flex max-h-[80vh] flex-col overflow-hidden rounded-t-3xl border border-[var(--pf-accent)]/20 bg-ink-2 shadow-[0_-20px_60px_rgba(0,0,0,.45),0_0_40px_rgba(57,245,173,.06)] sm:inset-x-auto sm:left-6 sm:w-[380px] sm:rounded-3xl xl:bottom-6"
                     aria-label="Bet slip"
                 >
-                    <header className="flex items-center justify-between border-b border-slate-200 px-5 py-3.5 dark:border-white/[.07]">
-                        <h2 className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-[1.5px] text-slate-900 dark:text-white">
+                    <header className="flex items-center justify-between border-b border-[var(--pf-border)] px-5 py-3.5">
+                        <h2 className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-[1.5px] text-slate-900">
                             Bet Slip
-                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-purple px-1.5 text-[11px] font-black tabular-nums text-white">{items.length}</span>
+                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-purple px-1.5 text-[11px] font-black tabular-nums text-[var(--pf-text)]">{items.length}</span>
                         </h2>
                         <div className="flex items-center gap-1">
                             <button type="button" onClick={clear} className="btn-ghost px-2.5 py-1.5 text-[11px] uppercase tracking-wider !text-neon-red">Clear</button>
@@ -152,7 +152,7 @@ export default function BetSlip({ onLogin }) {
                     </header>
 
                     {/* Mode tabs */}
-                    <div className="grid grid-cols-2 gap-1 border-b border-slate-200 p-2 dark:border-white/[.07]" role="tablist" aria-label="Bet type">
+                    <div className="grid grid-cols-2 gap-1 border-b border-[var(--pf-border)] p-2" role="tablist" aria-label="Bet type">
                         {[['singles', 'Singles'], ['multi', `Multi (${combinedOdds.toFixed(2)})`]].map(([id, label]) => (
                             <button
                                 key={id}
@@ -168,13 +168,13 @@ export default function BetSlip({ onLogin }) {
                         ))}
                     </div>
                     {!multiAllowed && items.length >= 2 && (
-                        <p className="border-b border-slate-200 px-5 py-2 text-[11px] text-slate-500 dark:border-white/[.07]">Multi needs one selection per event.</p>
+                        <p className="border-b border-[var(--pf-border)] px-5 py-2 text-[11px] text-slate-500">Multi needs one selection per event.</p>
                     )}
 
                     {/* Selections */}
                     <div className="min-h-0 flex-1 overflow-y-auto p-3">
                         {items.map((item) => (
-                            <div key={item.marketId} className="mb-2 rounded-xl border border-slate-200 p-3 dark:border-white/[.08]">
+                            <div key={item.marketId} className="mb-2 rounded-xl border border-[var(--pf-border)] p-3">
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
                                         <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{item.label}</p>
@@ -205,14 +205,14 @@ export default function BetSlip({ onLogin }) {
                     </div>
 
                     {/* Footer: stakes + place */}
-                    <footer className="border-t border-slate-200 p-4 dark:border-white/[.07]">
+                    <footer className="border-t border-[var(--pf-border)] p-4">
                         <div className="mb-3 flex flex-wrap gap-1.5">
                             {QUICK_STAKES.map((q) => (
                                 <button
                                     key={q}
                                     type="button"
                                     onClick={() => (mode === 'multi' ? setMultiStake(q) : setAllStakes(q))}
-                                    className="rounded-lg border border-slate-200 px-2.5 py-1 font-heading text-xs font-bold tabular-nums text-slate-600 transition hover:border-gold/50 hover:text-amber-600 dark:border-white/10 dark:text-slate-300 dark:hover:text-gold-l"
+                                    className="rounded-lg border border-[var(--pf-border)] px-2.5 py-1 font-heading text-xs font-bold tabular-nums text-slate-600 transition hover:border-gold/50 hover:text-amber-600 dark:text-slate-300 dark:hover:text-gold-l"
                                 >
                                     ${q}
                                 </button>
@@ -223,7 +223,7 @@ export default function BetSlip({ onLogin }) {
                             <div className="mb-3 flex items-center justify-between gap-3">
                                 <StakeInput value={multiStake} onChange={setMultiStake} ariaLabel="Multi stake" />
                                 <div className="text-right text-xs text-slate-500">
-                                    <span className="block">Combined odds <strong className="tabular-nums text-slate-900 dark:text-white">{combinedOdds.toFixed(2)}</strong></span>
+                                    <span className="block">Combined odds <strong className="tabular-nums text-slate-900">{combinedOdds.toFixed(2)}</strong></span>
                                     <span className="block">Returns <strong className="tabular-nums text-emerald-600 dark:text-neon-green-l">${multiReturn.toFixed(2)}</strong></span>
                                 </div>
                             </div>
@@ -231,7 +231,7 @@ export default function BetSlip({ onLogin }) {
 
                         {mode === 'singles' && (
                             <div className="mb-3 flex items-center justify-between text-xs text-slate-500">
-                                <span>Total stake <strong className="tabular-nums text-slate-900 dark:text-white">${singlesTotal.toFixed(2)}</strong></span>
+                                <span>Total stake <strong className="tabular-nums text-slate-900">${singlesTotal.toFixed(2)}</strong></span>
                                 <span>Returns <strong className="tabular-nums text-emerald-600 dark:text-neon-green-l">${singlesReturn.toFixed(2)}</strong></span>
                             </div>
                         )}
@@ -246,7 +246,7 @@ export default function BetSlip({ onLogin }) {
                                 {placing ? 'Placing…' : mode === 'multi' ? `Place Multi $${(parseFloat(multiStake) || 0).toFixed(2)}` : `Place ${items.filter((i) => parseFloat(stakes[i.marketId]) > 0).length || ''} Bet${items.filter((i) => parseFloat(stakes[i.marketId]) > 0).length !== 1 ? 's' : ''} $${singlesTotal.toFixed(2)}`}
                             </button>
                         ) : (
-                            <button type="button" onClick={onLogin} className="w-full rounded-xl border border-[#39f5ad]/30 bg-[#39f5ad]/10 p-3 text-center text-xs font-bold text-[#168565] transition hover:bg-[#39f5ad]/20 dark:text-[#8fffd6]">
+                            <button type="button" onClick={onLogin} className="w-full rounded-xl border border-[var(--pf-accent)]/30 bg-[var(--pf-accent)]/10 p-3 text-center text-xs font-bold text-[var(--pf-accent)] transition hover:bg-[var(--pf-accent)]/20 dark:text-[#8fffd6]">
                                 Sign in with any demo account to place this bet
                             </button>
                         )}

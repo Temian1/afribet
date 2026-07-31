@@ -101,13 +101,13 @@ export default function RewardWheel({ compact = false }) {
                     <div className="fixed inset-0 z-[97] grid place-items-center px-4" role="dialog" aria-modal="true" aria-label="Rewards wheel">
                         <button className="app-drawer-backdrop absolute inset-0 border-0 bg-black/75 backdrop-blur-sm" onClick={() => !spinning && setOpen(false)} type="button" aria-label="Close rewards wheel" />
 
-                        <div className="app-search-panel relative w-full max-w-sm overflow-hidden rounded-[18px] border border-slate-200 bg-white p-5 text-center text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#0a1424] dark:text-white">
-                            <button className="absolute right-3 top-3 grid size-8 place-items-center rounded-full border-0 bg-slate-100 text-slate-600 transition hover:bg-slate-200 active:scale-90 dark:bg-[#122038] dark:text-white dark:hover:bg-[#1a2b48]" onClick={() => !spinning && setOpen(false)} type="button" aria-label="Close">
+                        <div className="app-search-panel relative w-full max-w-sm overflow-hidden rounded-[18px] border border-[var(--pf-border)] bg-[var(--pf-card)] p-5 text-center text-[var(--pf-text)] shadow-2xl">
+                            <button className="absolute right-3 top-3 grid size-8 place-items-center rounded-full border-0 bg-[var(--pf-panel)] text-[var(--pf-muted)] transition hover:bg-[var(--pf-hover)] active:scale-90" onClick={() => !spinning && setOpen(false)} type="button" aria-label="Close">
                                 <UiIcon name="close" className="size-4" />
                             </button>
 
                             <h2 className="m-0 text-[18px] font-black">Daily reward wheel</h2>
-                            <p className="m-0 mt-1 text-[12px] text-slate-500 dark:text-[#7ea9ec]">One free spin every 24 hours.</p>
+                            <p className="m-0 mt-1 text-[12px] text-[var(--pf-muted)]">One free spin every 24 hours.</p>
 
                             <div className="relative mx-auto mt-5 size-[236px]">
                                 <span className="absolute -top-1 left-1/2 z-10 -translate-x-1/2 border-x-[9px] border-t-[14px] border-x-transparent border-t-amber-300 drop-shadow" aria-hidden="true" />
@@ -116,17 +116,17 @@ export default function RewardWheel({ compact = false }) {
 
                             <div className="mt-4 min-h-[46px]">
                                 {prize ? (
-                                    <div className="animate-scale-in rounded-[12px] border border-[#39f5ad]/35 bg-[#39f5ad]/10 px-4 py-2.5">
-                                        <span className="block text-[11px] uppercase tracking-wide text-slate-500 dark:text-[#7ea9ec]">You won</span>
-                                        <b className="block text-[16px] text-[#0cb978] dark:text-[#39f5ad]">{prize.label}</b>
+                                    <div className="animate-scale-in rounded-[12px] border border-[var(--pf-accent)]/35 bg-[var(--pf-accent)]/10 px-4 py-2.5">
+                                        <span className="block text-[11px] uppercase tracking-wide text-[var(--pf-muted)]">You won</span>
+                                        <b className="block text-[16px] text-[var(--pf-accent)]">{prize.label}</b>
                                     </div>
                                 ) : (
-                                    <p className="m-0 pt-3 text-[12px] text-slate-500 dark:text-[#7ea9ec]">{spinning ? 'Spinning…' : 'Tap spin to try your luck.'}</p>
+                                    <p className="m-0 pt-3 text-[12px] text-[var(--pf-muted)]">{spinning ? 'Spinning…' : 'Tap spin to try your luck.'}</p>
                                 )}
                             </div>
 
                             <button
-                                className="mt-3 h-[46px] w-full rounded-[12px] border-0 bg-[#0cb978] text-[14px] font-bold text-white transition hover:shadow-[0_0_28px_rgba(57,245,173,.35)] active:scale-95 disabled:opacity-60 dark:bg-[#39f5ad] dark:text-[#03150e]"
+                                className="mt-3 h-[46px] w-full rounded-[12px] border-0 bg-[var(--pf-accent)] text-[14px] font-bold text-white transition hover:shadow-[0_0_28px_rgba(57,245,173,.35)] active:scale-95 disabled:opacity-60"
                                 onClick={spin}
                                 disabled={spinning}
                                 type="button"

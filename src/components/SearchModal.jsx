@@ -56,11 +56,11 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
             <div className="fixed inset-0 z-[96] flex justify-center px-3 pt-[8vh]" role="dialog" aria-modal="true" aria-label="Search">
                 <button className="app-drawer-backdrop absolute inset-0 border-0 bg-black/70 backdrop-blur-sm" onClick={onClose} type="button" aria-label="Close search" />
 
-                <div className="app-search-panel relative flex max-h-[80vh] w-full max-w-xl flex-col overflow-hidden rounded-[16px] border border-slate-200 bg-white text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#0a1424] dark:text-white">
-                    <div className="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2.5 dark:border-white/10">
-                        <span className="text-slate-400 dark:text-[#5f83b8]"><UiIcon name="search" /></span>
+                <div className="app-search-panel relative flex max-h-[80vh] w-full max-w-xl flex-col overflow-hidden rounded-[16px] border border-[var(--pf-border)] bg-[var(--pf-card)] text-[var(--pf-text)] shadow-2xl">
+                    <div className="flex shrink-0 items-center gap-2 border-b border-[var(--pf-border)] px-3 py-2.5">
+                        <span className="text-[var(--pf-faint)]"><UiIcon name="search" /></span>
                         <input
-                            className="min-w-0 flex-1 border-0 bg-transparent py-2 text-[15px] text-slate-900 outline-none placeholder:text-slate-400 dark:text-white dark:placeholder:text-[#4d6b91]"
+                            className="min-w-0 flex-1 border-0 bg-transparent py-2 text-[15px] text-[var(--pf-text)] outline-none placeholder:text-[var(--pf-faint)]"
                             ref={inputRef}
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
@@ -68,7 +68,7 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
                             aria-label="Search Afribet"
                             type="search"
                         />
-                        <button className="grid size-8 shrink-0 place-items-center rounded-full border-0 bg-slate-100 text-slate-600 transition hover:bg-slate-200 active:scale-90 dark:bg-[#122038] dark:text-white dark:hover:bg-[#1a2b48]" onClick={onClose} type="button" aria-label="Close search">
+                        <button className="grid size-8 shrink-0 place-items-center rounded-full border-0 bg-[var(--pf-panel)] text-[var(--pf-muted)] transition hover:bg-[var(--pf-hover)] active:scale-90" onClick={onClose} type="button" aria-label="Close search">
                             <UiIcon name="close" className="size-4" />
                         </button>
                     </div>
@@ -76,11 +76,11 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
                     <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
                         {!term ? (
                             <div>
-                                <h3 className="m-0 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#5f83b8]">Popular searches</h3>
+                                <h3 className="m-0 mb-2 text-[11px] font-bold uppercase tracking-wider text-[var(--pf-faint)]">Popular searches</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {QUICK_SUGGESTIONS.map((suggestion) => (
                                         <button
-                                            className="h-8 rounded-full border border-slate-200 bg-slate-50 px-3 text-[12px] font-semibold text-slate-600 transition hover:border-[#0cb978]/40 hover:text-[#0cb978] active:scale-95 dark:border-white/[.07] dark:bg-[#122038] dark:text-[#bad0f5] dark:hover:border-[#39f5ad]/40 dark:hover:text-[#39f5ad]"
+                                            className="h-8 rounded-full border border-[var(--pf-border)] bg-[var(--pf-panel)] px-3 text-[12px] font-semibold text-[var(--pf-muted)] transition hover:border-[var(--pf-accent)]/40 hover:text-[var(--pf-accent)] active:scale-95 dark:hover:border-[var(--pf-accent)]/40"
                                             onClick={() => setQuery(suggestion)}
                                             type="button"
                                             key={suggestion}
@@ -91,16 +91,16 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
                                 </div>
                             </div>
                         ) : total === 0 ? (
-                            <p className="py-10 text-center text-[13px] text-slate-500 dark:text-[#7ea9ec]">No matches for “{query}”.</p>
+                            <p className="py-10 text-center text-[13px] text-[var(--pf-muted)]">No matches for “{query}”.</p>
                         ) : (
                             <div className="space-y-4">
                                 {results.events.length ? (
                                     <div>
-                                        <h3 className="m-0 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#5f83b8]">Events</h3>
+                                        <h3 className="m-0 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--pf-faint)]">Events</h3>
                                         <div className="space-y-1.5">
                                             {results.events.map((event, index) => (
                                                 <button
-                                                    className="app-search-row flex w-full items-center gap-3 rounded-[10px] border border-slate-200 bg-slate-50 p-2.5 text-left transition hover:-translate-y-0.5 hover:border-[#0cb978]/40 active:scale-[.99] dark:border-white/[.06] dark:bg-[#0d1b31] dark:hover:border-[#39f5ad]/40"
+                                                    className="app-search-row flex w-full items-center gap-3 rounded-[10px] border border-[var(--pf-border)] bg-[var(--pf-panel)] p-2.5 text-left transition hover:-translate-y-0.5 hover:border-[var(--pf-accent)]/40 active:scale-[.99] dark:hover:border-[var(--pf-accent)]/40"
                                                     style={{ animationDelay: `${index * 35}ms` }}
                                                     onClick={() => { onClose(); onNavigate('event', event.id); }}
                                                     type="button"
@@ -109,7 +109,7 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
                                                     <TeamCrest name={event.home} className="size-7" />
                                                     <div className="min-w-0 flex-1">
                                                         <b className="block truncate text-[13px]">{event.home} vs {event.away}</b>
-                                                        <span className="block truncate text-[11px] text-slate-500 dark:text-[#7ea9ec]">{event.league} • {event.time}</span>
+                                                        <span className="block truncate text-[11px] text-[var(--pf-muted)]">{event.league} • {event.time}</span>
                                                     </div>
                                                     <UiIcon name="chevronRight" className="size-4 shrink-0 opacity-40" />
                                                 </button>
@@ -120,17 +120,17 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
 
                                 {results.games.length ? (
                                     <div>
-                                        <h3 className="m-0 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#5f83b8]">Casino games</h3>
+                                        <h3 className="m-0 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--pf-faint)]">Casino games</h3>
                                         <div className="space-y-1.5">
                                             {results.games.map(([id, label], index) => (
                                                 <button
-                                                    className="app-search-row flex w-full items-center gap-3 rounded-[10px] border border-slate-200 bg-slate-50 p-2.5 text-left transition hover:-translate-y-0.5 hover:border-[#0cb978]/40 active:scale-[.99] dark:border-white/[.06] dark:bg-[#0d1b31] dark:hover:border-[#39f5ad]/40"
+                                                    className="app-search-row flex w-full items-center gap-3 rounded-[10px] border border-[var(--pf-border)] bg-[var(--pf-panel)] p-2.5 text-left transition hover:-translate-y-0.5 hover:border-[var(--pf-accent)]/40 active:scale-[.99] dark:hover:border-[var(--pf-accent)]/40"
                                                     style={{ animationDelay: `${index * 35}ms` }}
                                                     onClick={() => { onClose(); onOpenGame(id); }}
                                                     type="button"
                                                     key={label}
                                                 >
-                                                    <span className="grid size-7 shrink-0 place-items-center rounded-md bg-white text-[#0cb978] dark:bg-[#122038] dark:text-[#39f5ad]"><UiIcon name="slots" className="size-4" /></span>
+                                                    <span className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--pf-card)] text-[var(--pf-accent)]"><UiIcon name="slots" className="size-4" /></span>
                                                     <b className="min-w-0 flex-1 truncate text-[13px]">{label}</b>
                                                     <UiIcon name="chevronRight" className="size-4 shrink-0 opacity-40" />
                                                 </button>
@@ -141,17 +141,17 @@ export default function SearchModal({ open, onClose, onNavigate, onOpenGame }) {
 
                                 {results.pages.length ? (
                                     <div>
-                                        <h3 className="m-0 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#5f83b8]">Pages</h3>
+                                        <h3 className="m-0 mb-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--pf-faint)]">Pages</h3>
                                         <div className="space-y-1.5">
                                             {results.pages.map((entry, index) => (
                                                 <button
-                                                    className="app-search-row flex w-full items-center gap-3 rounded-[10px] border border-slate-200 bg-slate-50 p-2.5 text-left transition hover:-translate-y-0.5 hover:border-[#0cb978]/40 active:scale-[.99] dark:border-white/[.06] dark:bg-[#0d1b31] dark:hover:border-[#39f5ad]/40"
+                                                    className="app-search-row flex w-full items-center gap-3 rounded-[10px] border border-[var(--pf-border)] bg-[var(--pf-panel)] p-2.5 text-left transition hover:-translate-y-0.5 hover:border-[var(--pf-accent)]/40 active:scale-[.99] dark:hover:border-[var(--pf-accent)]/40"
                                                     style={{ animationDelay: `${index * 35}ms` }}
                                                     onClick={() => { onClose(); onNavigate(entry.target); }}
                                                     type="button"
                                                     key={entry.label}
                                                 >
-                                                    <span className="grid size-7 shrink-0 place-items-center rounded-md bg-white text-[#0cb978] dark:bg-[#122038] dark:text-[#39f5ad]">
+                                                    <span className="grid size-7 shrink-0 place-items-center rounded-md bg-[var(--pf-card)] text-[var(--pf-accent)]">
                                                         {entry.icon === 'ball' ? <SportIcon type="football" className="size-4" /> : <UiIcon name={entry.icon} className="size-4" />}
                                                     </span>
                                                     <b className="min-w-0 flex-1 truncate text-[13px]">{entry.label}</b>
