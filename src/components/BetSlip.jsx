@@ -3,7 +3,7 @@ import { useBetSlip } from '../contexts/BetSlipContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useApp } from '../contexts/AppContext';
 import { useToast } from '../contexts/ToastContext';
-import sportsApi from '../services/sportsApi';
+import { addDemoBets } from '../services/demoBets';
 import { X } from './Icons';
 
 const QUICK_STAKES = [5, 10, 25, 50, 100];
@@ -26,10 +26,10 @@ function StakeInput({ value, onChange, ariaLabel }) {
     );
 }
 
-export default function BetSlip() {
+export default function BetSlip({ onLogin }) {
     const { items, remove, clear, open, setOpen } = useBetSlip();
     const { user } = useAuth();
-    const { loadWallet, balance } = useApp();
+    const { addTransaction, balance, updateBalance } = useApp();
     const toast = useToast();
 
     const [mode, setMode] = useState('singles'); // singles | multi
@@ -67,23 +67,24 @@ export default function BetSlip() {
         if (total > balance) { toast.error('Insufficient balance for total stake.'); return; }
 
         setPlacing(true);
-        const results = await Promise.allSettled(
-            legs.map((i) => sportsApi.placeBet({ market_id: i.marketId, stake: parseFloat(stakes[i.marketId]) }))
-        );
+        addDemoBets(user.email, legs.map((leg) => {
+            const stake = parseFloat(stakes[leg.marketId]);
+            return {
+                sports_event_id: leg.eventId,
+                event: { event_name: leg.eventName },
+                market_type: leg.marketType,
+                selection: leg.label,
+                stake,
+                odds_at_bet: leg.odds,
+                potential_win: stake * leg.odds,
+                cashout_value: Number((stake * 0.82).toFixed(2)),
+            };
+        }));
+        updateBalance(-total);
+        addTransaction({ type: 'sports bet', amount: -total, status: 'pending', description: `${legs.length} demo selection${legs.length > 1 ? 's' : ''}` });
+        legs.forEach((leg) => remove(leg.marketId));
         setPlacing(false);
-
-        const ok = results.filter((r) => r.status === 'fulfilled').length;
-        const failed = results.length - ok;
-
-        if (ok > 0) {
-            toast.success(`${ok} bet${ok > 1 ? 's' : ''} placed.`, { title: 'Bet Slip' });
-            legs.forEach((leg, idx) => { if (results[idx].status === 'fulfilled') remove(leg.marketId); });
-            loadWallet();
-        }
-        if (failed > 0) {
-            const firstError = results.find((r) => r.status === 'rejected');
-            toast.error(`${failed} bet${failed > 1 ? 's' : ''} failed: ${firstError?.reason?.message ?? 'unknown error'}`);
-        }
+        toast.success(`${legs.length} demo bet${legs.length > 1 ? 's' : ''} placed successfully.`, { title: 'Bet Slip' });
     };
 
     const placeMulti = async () => {
@@ -93,11 +94,21 @@ export default function BetSlip() {
 
         setPlacing(true);
         try {
-            const res = await sportsApi.placeMultiBet({ market_ids: items.map((i) => i.marketId), stake });
-            toast.success(`Multi placed — potential win $${Number(res.bet?.potential_win ?? 0).toFixed(2)}`, { title: 'Bet Slip' });
+            const potentialWin = stake * combinedOdds;
+            addDemoBets(user.email, [{
+                market_type: 'multi',
+                selection: `${items.length} selections`,
+                notes: JSON.stringify(items.map((item) => ({ event: item.eventName, selection: item.label, odds: item.odds }))),
+                stake,
+                odds_at_bet: combinedOdds,
+                potential_win: potentialWin,
+                cashout_value: Number((stake * 0.78).toFixed(2)),
+            }]);
+            updateBalance(-stake);
+            addTransaction({ type: 'sports multi', amount: -stake, status: 'pending', description: `${items.length}-leg demo multi` });
+            toast.success(`Demo multi placed — potential win $${potentialWin.toFixed(2)}`, { title: 'Bet Slip' });
             clear();
             setMultiStake('');
-            loadWallet();
         } catch (e) {
             toast.error(e.message ?? 'Failed to place multi bet.');
         } finally {
@@ -235,9 +246,9 @@ export default function BetSlip() {
                                 {placing ? 'Placing…' : mode === 'multi' ? `Place Multi $${(parseFloat(multiStake) || 0).toFixed(2)}` : `Place ${items.filter((i) => parseFloat(stakes[i.marketId]) > 0).length || ''} Bet${items.filter((i) => parseFloat(stakes[i.marketId]) > 0).length !== 1 ? 's' : ''} $${singlesTotal.toFixed(2)}`}
                             </button>
                         ) : (
-                            <p className="rounded-xl border border-gold/30 bg-gold/10 p-3 text-center text-xs font-semibold text-amber-700 dark:text-gold-l">
-                                Log in to place your bets — your slip is saved.
-                            </p>
+                            <button type="button" onClick={onLogin} className="w-full rounded-xl border border-[#39f5ad]/30 bg-[#39f5ad]/10 p-3 text-center text-xs font-bold text-[#168565] transition hover:bg-[#39f5ad]/20 dark:text-[#8fffd6]">
+                                Sign in with any demo account to place this bet
+                            </button>
                         )}
                     </footer>
                 </aside>

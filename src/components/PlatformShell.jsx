@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useBetSlip } from '../contexts/BetSlipContext';
 import AuthModal from './AuthModal';
 import BetSlip from './BetSlip';
 
@@ -231,17 +232,17 @@ function DesktopChrome({ page, go, user, openAuth }) {
     );
 }
 
-function BottomNav({ page, go }) {
+function BottomNav({ page, go, betCount, openBetSlip }) {
     return (
         <nav className="fixed inset-x-0 bottom-0 z-50 grid h-[63px] grid-cols-6 border-t-2 border-[#263751] bg-[#071226]/95 backdrop-blur-xl xl:hidden" aria-label="Bottom navigation">
             {BOTTOM_ITEMS.map(([target, label, icon]) => {
                 const active = page === target;
                 return (
-                    <button className={`group relative flex flex-col items-center justify-center gap-0.5 border-0 bg-transparent text-[10px] font-bold transition ${active ? 'text-[#39f5ad]' : 'text-white'}`} onClick={() => go(target)} type="button" key={label}>
+                    <button className={`group relative flex flex-col items-center justify-center gap-0.5 border-0 bg-transparent text-[10px] font-bold transition ${active ? 'text-[#39f5ad]' : 'text-white'}`} onClick={() => label === 'Bet slip' ? openBetSlip() : go(target)} type="button" key={label}>
                         {active ? <span className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-[#39f5ad] shadow-[0_0_10px_#39f5ad]" /> : null}
                         <PlatformIcon name={icon} className={`size-[22px] transition-transform group-active:scale-75 ${active ? '-translate-y-0.5' : ''}`} />
                         {label}
-                        {label === 'Bet slip' ? <i className="absolute left-1/2 top-1 h-4 min-w-4 rounded-full bg-[#f03e52] px-1 text-[10px] not-italic text-white">0</i> : null}
+                        {label === 'Bet slip' && betCount > 0 ? <i className="absolute left-1/2 top-1 h-4 min-w-4 rounded-full bg-[#f03e52] px-1 text-[10px] not-italic text-white">{betCount}</i> : null}
                     </button>
                 );
             })}
@@ -252,6 +253,7 @@ function BottomNav({ page, go }) {
 export default function PlatformShell({ children }) {
     const { page, setPage } = useApp();
     const { user } = useAuth();
+    const { items: betItems, setOpen: setBetSlipOpen } = useBetSlip();
     const [auth, setAuth] = useState({ open: false, mode: 'login' });
     const [menuOpen, setMenuOpen] = useState(false);
     const go = (target) => {
@@ -273,8 +275,8 @@ export default function PlatformShell({ children }) {
                 </div>
                 <div className="platform-page-enter relative z-[1]" key={page}>{children}</div>
             </div>
-            <BottomNav page={page} go={go} />
-            <BetSlip />
+            <BottomNav page={page} go={go} betCount={betItems.length} openBetSlip={() => betItems.length ? setBetSlipOpen(true) : go('sports')} />
+            <BetSlip onLogin={() => openAuth('login')} />
             <AuthModal open={auth.open} initialMode={auth.mode} onClose={() => setAuth((current) => ({ ...current, open: false }))} />
         </div>
     );

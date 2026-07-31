@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBetSlip } from '../contexts/BetSlipContext';
 import { THUMBS } from '../games/thumbnails';
 import AuthModal from '../components/AuthModal';
 import { BrandDiscord, BrandFacebook, BrandInstagram, BrandTelegram, BrandX } from '../components/Icons';
@@ -211,7 +212,22 @@ function WinnerRail() {
 }
 
 function MatchCard({ match, mobile = false }) {
+    const { toggle, has } = useBetSlip();
     const labels = mobile ? ['1', 'X', '2'] : ['1', 'X', '2'];
+    const eventId = `home-${match.home}-${match.away}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const selectOdd = (odd, index) => {
+        const marketId = `${eventId}-1x2-${index}`;
+        toggle({
+            marketId,
+            eventId,
+            eventName: `${match.home} vs ${match.away}`,
+            league: match.league || 'UEFA Champions League Qualifying',
+            marketType: 'Match Result',
+            label: [match.home, 'Draw', match.away][index],
+            selection: ['home', 'draw', 'away'][index],
+            odds: Number(odd),
+        });
+    };
     return (
         <article className={`${mobile ? 'h-[204px] w-[318px] p-[14px_14px_13px]' : 'h-[243px] w-[360px] p-[19px_18px_17px]'} shrink-0 rounded-[9px] ${match.featured ? 'bg-[#102445]' : 'bg-[#071328]'}`}>
             <div className="flex justify-between">
@@ -239,9 +255,9 @@ function MatchCard({ match, mobile = false }) {
             </div>
             <div className={`${mobile ? 'mt-2 grid-cols-[repeat(3,1fr)_58px] gap-1.5' : 'mt-[9px] grid-cols-[repeat(3,1fr)_67px] gap-[7px]'} grid`}>
                 {match.odds.map((odd, index) => (
-                    <button className={`${mobile ? 'h-[42px]' : 'h-[50px]'} flex flex-col items-center justify-center rounded-[9px] border-0 bg-[#0b1931]`} type="button" key={odd}>
+                    <button aria-pressed={has(`${eventId}-1x2-${index}`)} aria-label={`${[match.home, 'Draw', match.away][index]} at ${odd}`} className={`${mobile ? 'h-[42px]' : 'h-[50px]'} flex flex-col items-center justify-center rounded-[9px] border border-transparent bg-[#0b1931] transition hover:border-[#39f5ad]/50 ${has(`${eventId}-1x2-${index}`) ? 'border-[#39f5ad] bg-[#174b3c] shadow-[0_0_0_1px_rgba(57,245,173,.2)]' : ''}`} onClick={() => selectOdd(odd, index)} type="button" key={odd}>
                         <small className="text-[10px] text-[#6686b7]">{labels[index]}</small>
-                        <b className="mt-1 text-[14px] text-white xl:text-[15px] xl:text-[#768195]">{odd}</b>
+                        <b className={`mt-1 text-[14px] xl:text-[15px] ${has(`${eventId}-1x2-${index}`) ? 'text-[#39f5ad]' : 'text-white xl:text-[#768195]'}`}>{odd}</b>
                     </button>
                 ))}
                 <button className={`${mobile ? 'h-[42px]' : 'h-[50px]'} rounded-[9px] border-0 bg-[#39f5ad] text-[13px] font-extrabold text-[#061810] xl:text-sm`} type="button">{match.more}</button>

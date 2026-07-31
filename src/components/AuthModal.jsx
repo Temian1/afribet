@@ -76,13 +76,12 @@ export default function AuthModal({ open, initialMode = 'login', onClose }) {
                 close();
             } else if (mode === 'register') {
                 if (form.password !== form.confirm) throw new Error('Passwords do not match.');
-                if (strength.score < 2) throw new Error('Please choose a stronger password.');
                 const user = await register({ name: form.name, email: form.email, password: form.password });
                 toast.success(`Account created. Welcome, ${user.name}!`, { title: 'Registered' });
                 close();
             } else if (mode === 'forgot') {
                 await requestReset({ email: form.email });
-                toast.info('If that email exists, a reset link is on its way.', { title: 'Check your inbox' });
+                toast.info('Demo reset confirmed. Choose a new password.', { title: 'Demo mode' });
                 setMode('reset');
             } else {
                 if (form.password !== form.confirm) throw new Error('Passwords do not match.');
@@ -139,7 +138,14 @@ export default function AuthModal({ open, initialMode = 'login', onClose }) {
                         </button>
                     )}
                     <h2 className="bg-gradient-to-br from-purple-l to-gold-l bg-clip-text font-display text-2xl font-black tracking-wide text-transparent">{titles[mode]}</h2>
-                    <p className="mt-1 mb-5 text-sm text-slate-600 dark:text-slate-400">Continue your winning streak on NeonBet.</p>
+                    <p className="mb-3 mt-1 text-sm text-slate-600 dark:text-slate-400">Explore the complete Afribet interface in demo mode.</p>
+
+                    {(mode === 'login' || mode === 'register') && (
+                        <div className="mb-5 flex items-start gap-2 rounded-xl border border-[#39f5ad]/25 bg-[#39f5ad]/10 px-3 py-2.5 text-xs leading-relaxed text-[#127c5c] dark:text-[#8fffd6]">
+                            <span className="mt-0.5 size-2 shrink-0 rounded-full bg-[#39f5ad] shadow-[0_0_10px_#39f5ad]" />
+                            <span><strong>Frontend demo:</strong> use any email and password. No real account or credentials are sent to a server.</span>
+                        </div>
+                    )}
 
                     {(mode === 'login' || mode === 'register') && (
                         <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1 dark:border-white/10 dark:bg-white/[.04]">

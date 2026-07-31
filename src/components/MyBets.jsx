@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import sportsApi from '../services/sportsApi';
+import { cashOutDemoBet, getDemoBets } from '../services/demoBets';
 import { useAuth } from '../contexts/AuthContext';
 import { useApp } from '../contexts/AppContext';
 import { useToast } from '../contexts/ToastContext';
@@ -23,7 +23,7 @@ const FILTERS = [
 
 export default function MyBets() {
     const { user } = useAuth();
-    const { loadWallet } = useApp();
+    const { addTransaction, updateBalance } = useApp();
     const toast = useToast();
     const [bets, setBets] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -32,15 +32,10 @@ export default function MyBets() {
 
     const load = useCallback(async () => {
         setLoading(true);
-        try {
-            const data = await sportsApi.getMyBets(filter ? { status: filter } : {});
-            setBets(data.data ?? data.bets ?? []);
-        } catch {
-            setBets([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [filter]);
+        const allBets = getDemoBets(user?.email);
+        setBets(filter ? allBets.filter((bet) => bet.status === filter) : allBets);
+        setLoading(false);
+    }, [filter, user?.email]);
 
     useEffect(() => { if (user) load(); }, [user, load]);
 
@@ -48,15 +43,12 @@ export default function MyBets() {
 
     const cashout = async (bet) => {
         setCashingOut(bet.id);
-        try {
-            const res = await sportsApi.cashoutBet(bet.id);
-            toast.success(`Cashed out $${Number(res.amount).toFixed(2)}`, { title: 'Cash Out' });
-            await Promise.all([load(), loadWallet()]);
-        } catch (e) {
-            toast.error(e.message ?? 'Cash out failed.');
-        } finally {
-            setCashingOut(null);
-        }
+        const amount = cashOutDemoBet(user.email, bet.id);
+        updateBalance(amount);
+        addTransaction({ type: 'cash out', amount, status: 'completed', description: 'Demo sports bet cash out' });
+        toast.success(`Cashed out $${amount.toFixed(2)}`, { title: 'Cash Out' });
+        await load();
+        setCashingOut(null);
     };
 
     return (

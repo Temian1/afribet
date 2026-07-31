@@ -26,6 +26,7 @@ export function BetSlipProvider({ children }) {
     /* Toggle a selection: clicking the same odds removes it; picking another
        selection from the same event replaces it (one leg per event). */
     const toggle = useCallback((selection) => {
+        setOpen(true);
         setItems((prev) => {
             if (prev.some((i) => i.marketId === selection.marketId)) {
                 return prev.filter((i) => i.marketId !== selection.marketId);
@@ -35,7 +36,6 @@ export function BetSlipProvider({ children }) {
                 // replaced a selection from the same event
                 return [...next, selection];
             }
-            setOpen(true);
             return [...prev, selection];
         });
     }, []);

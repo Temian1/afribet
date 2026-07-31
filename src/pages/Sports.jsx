@@ -140,7 +140,7 @@ function TopEventCard({ event }) {
             </div>
             <div className="mt-[17px] flex items-center justify-between text-[13px] text-[#8ab1f1]"><span>Match Result</span><span className="flex items-center gap-4">‹ <b className="font-normal">1/5</b> ›</span></div>
             <div className="mt-3 grid grid-cols-[repeat(3,1fr)_66px] gap-2">
-                {event.odds.map((odd, index) => <button className={`h-[50px] rounded-[8px] border border-transparent bg-[#0d1930] text-white transition hover:border-[#39f5ad]/50 ${has(`${event.id}-${index}`) ? 'border-[#39f5ad] bg-[#14392f]' : ''}`} onClick={() => selectOdd(odd, index)} type="button" key={odd}><small className="block text-[10px] text-[#7395cd]">{['1', 'X', '2'][index]}</small><b>{odd.toFixed(2)}</b></button>)}
+                {event.odds.map((odd, index) => <button aria-pressed={has(`${event.id}-${index}`)} aria-label={`${['Home win', 'Draw', 'Away win'][index]} at ${odd.toFixed(2)}`} className={`h-[50px] rounded-[8px] border border-transparent bg-[#0d1930] text-white transition hover:border-[#39f5ad]/50 ${has(`${event.id}-${index}`) ? 'border-[#39f5ad] bg-[#14392f] text-[#39f5ad] shadow-[0_0_0_1px_rgba(57,245,173,.25)]' : ''}`} onClick={() => selectOdd(odd, index)} type="button" key={odd}><small className="block text-[10px] text-[#7395cd]">{['1', 'X', '2'][index]}</small><b>{odd.toFixed(2)}</b></button>)}
                 <button className="h-[50px] rounded-[8px] border-0 bg-[#39f5ad] text-[14px] font-bold text-[#03150e] transition hover:brightness-110" type="button">+{event.more}</button>
             </div>
         </article>
@@ -156,14 +156,23 @@ function SectionTitle({ upcoming = false }) {
     );
 }
 
-function OddCell({ values, event }) {
+const MARKET_META = [
+    { type: 'Match Result', labels: ['Home', 'Draw', 'Away'] },
+    { type: 'Total Goals', labels: ['Over', 'Line', 'Under'] },
+    { type: 'Both Teams to Score', labels: ['Yes', 'Market', 'No'] },
+    { type: 'Asian Handicap', labels: ['Home', 'Line', 'Away'] },
+];
+
+function OddCell({ values, event, marketIndex }) {
     const { toggle, has } = useBetSlip();
+    const meta = MARKET_META[marketIndex];
     return (
         <div className="grid h-[51px] min-w-[188px] grid-cols-3 overflow-hidden rounded-[9px] border border-[#263958] bg-[#0e1b31]">
             {values.map((value, index) => {
                 const numeric = typeof value === 'number';
-                const marketId = `${event.id}-${values.join('-')}-${index}`;
-                return <button className={`border-0 border-r border-[#2b3a53] bg-transparent text-[13px] font-bold text-white transition last:border-0 hover:bg-[#183458] ${has(marketId) ? 'bg-[#174b3c] text-[#39f5ad]' : ''}`} disabled={!numeric} onClick={() => numeric && toggle({ marketId, eventId: event.id, eventName: `${event.home} vs ${event.away}`, league: event.league, marketType: 'market', label: String(index + 1), selection: String(index), odds: value })} type="button" key={`${value}-${index}`}>{numeric ? value.toFixed(2) : value}</button>;
+                const marketId = `${event.id}-${marketIndex}-${index}`;
+                const label = meta.labels[index];
+                return <button aria-pressed={numeric ? has(marketId) : undefined} aria-label={numeric ? `${meta.type}: ${label} at ${value.toFixed(2)}` : `${meta.type} line ${value}`} className={`border-0 border-r border-[#2b3a53] bg-transparent text-[13px] font-bold text-white transition last:border-0 hover:bg-[#183458] ${has(marketId) ? 'bg-[#174b3c] text-[#39f5ad]' : ''}`} disabled={!numeric} onClick={() => numeric && toggle({ marketId, eventId: event.id, eventName: `${event.home} vs ${event.away}`, league: event.league, marketType: meta.type, label, selection: `${marketIndex}-${index}`, odds: value })} type="button" key={`${value}-${index}`}>{numeric ? value.toFixed(2) : value}</button>;
             })}
         </div>
     );
@@ -177,7 +186,7 @@ function UpcomingRow({ event }) {
                 <div className="mt-2 grid grid-cols-[20px_1fr] gap-x-2 gap-y-2 text-[13px] font-bold"><span>{event.emblems[0]}</span><span>{event.home}</span><span>{event.emblems[1]}</span><span>{event.away}</span></div>
             </div>
             <div className="flex items-center gap-6 border-l border-[#2b3a53] px-4">
-                {event.odds.map((values, index) => <OddCell values={values} event={event} key={index} />)}
+                {event.odds.map((values, index) => <OddCell values={values} event={event} marketIndex={index} key={index} />)}
                 <button className="h-[51px] min-w-[70px] rounded-[9px] border-0 bg-[#39f5ad] text-[12px] font-bold text-[#03150e]" type="button">+{event.more} ›</button>
             </div>
         </div>
@@ -185,6 +194,20 @@ function UpcomingRow({ event }) {
 }
 
 function MobileUpcomingCard({ event }) {
+    const { toggle, has } = useBetSlip();
+    const selectOdd = (odd, index) => {
+        const marketId = `${event.id}-mobile-1x2-${index}`;
+        toggle({
+            marketId,
+            eventId: event.id,
+            eventName: `${event.home} vs ${event.away}`,
+            league: event.league,
+            marketType: 'Match Result',
+            label: [event.home, 'Draw', event.away][index],
+            selection: ['home', 'draw', 'away'][index],
+            odds: odd,
+        });
+    };
     return (
         <article className="border-b border-[#33425a] bg-[#071226]">
             <div className="grid grid-cols-[1fr_180px]">
@@ -194,7 +217,11 @@ function MobileUpcomingCard({ event }) {
                     <div className="mt-3 space-y-2 text-[13px] font-bold"><p className="m-0 flex gap-2"><span>{event.emblems[0]}</span>{event.home}</p><p className="m-0 flex gap-2"><span>{event.emblems[1]}</span>{event.away}</p></div>
                 </div>
                 <div className="grid grid-cols-3 self-end overflow-hidden rounded-[9px] border border-[#2c3c56] bg-[#0e1b31]">
-                    {event.odds[0].map((odd) => <button className="h-[49px] border-0 border-r border-[#2c3c56] bg-transparent text-[13px] font-bold text-white last:border-0" type="button" key={odd}>{odd.toFixed(2)}</button>)}
+                    {event.odds[0].map((odd, index) => {
+                        const marketId = `${event.id}-mobile-1x2-${index}`;
+                        const selected = has(marketId);
+                        return <button aria-pressed={selected} aria-label={`${[event.home, 'Draw', event.away][index]} at ${odd.toFixed(2)}`} className={`h-[49px] border-0 border-r border-[#2c3c56] bg-transparent text-[13px] font-bold text-white transition last:border-0 ${selected ? 'bg-[#174b3c] text-[#39f5ad]' : 'hover:bg-[#183458]'}`} onClick={() => selectOdd(odd, index)} type="button" key={odd}>{odd.toFixed(2)}</button>;
+                    })}
                 </div>
             </div>
         </article>
