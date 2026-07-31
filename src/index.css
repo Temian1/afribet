@@ -326,55 +326,209 @@
 }
 
 /* Normalize legacy page primitives into the Afribet dark surface system. */
-.platform-content .bg-slate-50 {
+[data-theme="dark"] .platform-content .bg-slate-50 {
   background-color: transparent !important;
 }
 
-.platform-content .bg-white,
-.platform-content .card {
+[data-theme="dark"] .platform-content .bg-white,
+[data-theme="dark"] .platform-content .card {
   background-color: #0b162a !important;
   border-color: #263752 !important;
   color: #f8fafc;
 }
 
-.platform-content .text-slate-950,
-.platform-content .text-slate-900,
-.platform-content .text-slate-800 {
+[data-theme="dark"] .platform-content .text-slate-950,
+[data-theme="dark"] .platform-content .text-slate-900,
+[data-theme="dark"] .platform-content .text-slate-800 {
   color: #f8fafc !important;
 }
 
-.platform-content .text-slate-700,
-.platform-content .text-slate-600 {
+[data-theme="dark"] .platform-content .text-slate-700,
+[data-theme="dark"] .platform-content .text-slate-600 {
   color: #b7c6dc !important;
 }
 
-.platform-content .text-slate-500,
-.platform-content .text-slate-400 {
+[data-theme="dark"] .platform-content .text-slate-500,
+[data-theme="dark"] .platform-content .text-slate-400 {
   color: #7ea0cf !important;
 }
 
-.platform-content .border-slate-100,
-.platform-content .border-slate-200,
-.platform-content .border-slate-300 {
+[data-theme="dark"] .platform-content .border-slate-100,
+[data-theme="dark"] .platform-content .border-slate-200,
+[data-theme="dark"] .platform-content .border-slate-300 {
   border-color: #263752 !important;
 }
 
-.platform-content input,
-.platform-content textarea,
-.platform-content select {
+[data-theme="dark"] .platform-content input,
+[data-theme="dark"] .platform-content textarea,
+[data-theme="dark"] .platform-content select {
   border-color: #263752 !important;
   background-color: #071328 !important;
   color: #f8fafc !important;
 }
 
-.platform-content .card-hover {
+[data-theme="dark"] .platform-content .card-hover {
   background: linear-gradient(145deg, #0d1b31, #091426) !important;
   border-color: #263752 !important;
 }
 
-.platform-content .card-hover:hover {
+[data-theme="dark"] .platform-content .card-hover:hover {
   border-color: rgba(57, 245, 173, .42) !important;
   box-shadow: 0 18px 50px rgba(0, 0, 0, .28), 0 0 26px rgba(57, 245, 173, .06);
+}
+
+/* Custom sportsbook pages use a navy design language. These mappings keep
+   that hierarchy intact while providing a complete, high-contrast light UI. */
+[data-theme="light"] .platform-shell {
+  background: #f3f6fa !important;
+  color: #0f172a;
+}
+
+[data-theme="light"] .platform-shell .platform-content {
+  background: #f3f6fa;
+}
+
+[data-theme="light"] .platform-shell :is(
+  [class~="bg-[#030810]"],
+  [class~="bg-[#071018]"],
+  [class~="bg-[#071226]"],
+  [class~="bg-[#071226]/80"],
+  [class~="bg-[#071226]/95"],
+  [class~="bg-[#071327]"],
+  [class~="bg-[#071328]"]
+) {
+  background-color: #ffffff !important;
+}
+
+[data-theme="light"] .platform-shell :is(
+  [class~="bg-[#091326]"],
+  [class~="bg-[#0a1424]"],
+  [class~="bg-[#0a1830]"],
+  [class~="bg-[#0a1b2f]"],
+  [class~="bg-[#0a1f1a]"],
+  [class~="bg-[#0b1528]"],
+  [class~="bg-[#0b162a]"],
+  [class~="bg-[#0b1930]"],
+  [class~="bg-[#0b1931]"],
+  [class~="bg-[#0c1b31]"],
+  [class~="bg-[#0d1930]"],
+  [class~="bg-[#0d1b31]"],
+  [class~="bg-[#0d1e3b]"],
+  [class~="bg-[#0e1b31]"],
+  [class~="bg-[#101c32]"],
+  [class~="bg-[#101c31]"],
+  [class~="bg-[#10203b]"],
+  [class~="bg-[#102445]"],
+  [class~="bg-[#10254a]"],
+  [class~="bg-[#102653]"],
+  [class~="bg-[#111d34]"],
+  [class~="bg-[#122037]"],
+  [class~="bg-[#122038]"],
+  [class~="bg-[#12233f]"],
+  [class~="bg-[#15233d]"],
+  [class~="bg-[#17304f]"],
+  [class~="bg-[#183458]"],
+  [class~="bg-[#19243a]"],
+  [class~="bg-[#1a2b48]"],
+  [class~="bg-[#1a2f52]"],
+  [class~="bg-[#192338]"]
+) {
+  background-color: #eef3f8 !important;
+}
+
+[data-theme="light"] .platform-shell :is(
+  [class~="bg-[#14392f]"],
+  [class~="bg-[#174b3c]"]
+) {
+  background-color: #d9fbe9 !important;
+}
+
+[data-theme="light"] .platform-shell :is(
+  [class~="text-white"],
+  [class~="text-[#edf2fb]"],
+  [class~="text-[#f0f2f7]"],
+  [class~="text-[#f8fafc]"],
+  [class~="text-[#cfe0f7]"],
+  [class~="text-[#d7e4fb]"],
+  [class~="text-[#bad0f5]"]
+) {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .platform-shell :is(
+  [class~="text-[#4d6b91]"],
+  [class~="text-[#5f83b8]"],
+  [class~="text-[#6686b7]"],
+  [class~="text-[#68a1ff]"],
+  [class~="text-[#6f88ad]"],
+  [class~="text-[#70a4f7]"],
+  [class~="text-[#7395cd]"],
+  [class~="text-[#74a4fb]"],
+  [class~="text-[#768195]"],
+  [class~="text-[#78a4ff]"],
+  [class~="text-[#7ea0cf]"],
+  [class~="text-[#7ea9ec]"],
+  [class~="text-[#81affb]"],
+  [class~="text-[#88a8df]"],
+  [class~="text-[#8ab1f1]"],
+  [class~="text-[#8bb2ee]"],
+  [class~="text-[#8bb2ff]"],
+  [class~="text-[#8fb0df]"],
+  [class~="text-[#89a9d8]"],
+  [class~="text-[#96bbf5]"],
+  [class~="text-[#9fbce6]"]
+) {
+  color: #52657d !important;
+}
+
+[data-theme="light"] .platform-shell :is(
+  [class~="border-[#22314c]"],
+  [class~="border-[#25375a]"],
+  [class~="border-[#263653]"],
+  [class~="border-[#263752]"],
+  [class~="border-[#263755]"],
+  [class~="border-[#263958]"],
+  [class~="border-[#283753]"],
+  [class~="border-[#2b3a53]"],
+  [class~="border-[#2b4269]"],
+  [class~="border-[#2c3c56]"],
+  [class~="border-[#33425a]"],
+  [class~="border-[#3d5480]"],
+  [class~="border-[#52637d]"],
+  [class~="border-white/5"],
+  [class~="border-white/10"]
+) {
+  border-color: #d6e0eb !important;
+}
+
+[data-theme="light"] .platform-shell :is(input, textarea, select) {
+  border-color: #cbd7e5 !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .platform-shell :is(.platform-category, .platform-desktop-mode, .platform-quick-tile),
+[data-theme="light"] .platform-shell :is(.platform-category, .platform-desktop-mode, .platform-quick-tile) [class~="text-white"] {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .platform-shell .platform-quick-tile {
+  background-color: #173b70 !important;
+}
+
+[data-theme="light"] .platform-shell [class~="bg-[#39f5ad]"] {
+  color: #03150e !important;
+}
+
+[data-theme="light"] .platform-shell .card-hover {
+  border-color: #dbe4ee !important;
+  background: linear-gradient(145deg, #ffffff, #f6f9fc) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .platform-shell .card-hover:hover {
+  border-color: rgba(12, 185, 120, .42) !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, .1), 0 0 24px rgba(12, 185, 120, .06);
 }
 
 /* Accessibility: honor reduced-motion preferences */

@@ -7,6 +7,7 @@ import BetSlip from './BetSlip';
 import AppSidebar from './AppSidebar';
 import SearchModal from './SearchModal';
 import RewardWheel from './RewardWheel';
+import ThemeToggle from './ThemeToggle';
 import { SportIcon, UiIcon } from './SportIcons';
 
 const NAV_ITEMS = [
@@ -205,7 +206,7 @@ function DesktopChrome({ page, go, user, openAuth, openSearch, openMenu }) {
                         </>
                     )}
                     <button className="h-[45px] rounded-[20px] border border-[#52637d] bg-[#122037] px-3 text-sm font-bold text-white" type="button" aria-label="Language">GB</button>
-                    <button className="grid size-[45px] place-items-center rounded-[20px] border border-[#52637d] bg-[#122037] text-[#39f5ad] transition hover:rotate-90" onClick={() => go('profile')} type="button" aria-label="Settings"><UiIcon name="settings" className="size-5" /></button>
+                    <ThemeToggle />
                 </div>
             </header>
         </>
