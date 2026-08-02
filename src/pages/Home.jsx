@@ -265,65 +265,13 @@ function HomeFooter({ go }) {
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('support')} type="button">Support</button>
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('sports')} type="button">Sports</button>
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('casino')} type="button">Casino</button>
-                <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('legal')} type="button">Terms</button>
             </nav>
 
-            <ResponsibleGaming go={go} />
-
-            <p className="mt-5 text-[11px] leading-relaxed text-[var(--pf-faint)]">
-                © {new Date().getFullYear()} Afribet. Gambling can be addictive — play responsibly.
+            <p className="mt-5 flex items-center gap-2 text-[11px] text-[var(--pf-faint)]">
+                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-[var(--pf-danger)] text-[9px] font-black text-[var(--pf-danger)]">18+</span>
+                Bet responsibly. Only stake what you can afford to lose.
             </p>
         </footer>
-    );
-}
-
-const RESPONSIBLE_POINTS = [
-    { icon: 'wallet', title: 'Set your limits', desc: 'Deposit, loss and session limits are always available in your profile.' },
-    { icon: 'clock', title: 'Take a break', desc: 'Cool-off and self-exclusion let you step away for as long as you need.' },
-    { icon: 'headset', title: 'Talk to someone', desc: 'Our support team is trained to help, 24 hours a day.' },
-];
-
-function ResponsibleGaming({ go }) {
-    return (
-        <section className="mt-6 overflow-hidden rounded-[14px] border border-[var(--pf-border)] bg-[var(--pf-card)]" aria-labelledby="responsible-heading">
-            <div className="flex flex-wrap items-center gap-3 border-b border-[var(--pf-border)] px-4 py-3.5">
-                <span className="grid size-10 shrink-0 place-items-center rounded-full border-2 border-[var(--pf-danger)] text-[13px] font-black text-[var(--pf-danger)]">
-                    18+
-                </span>
-                <div className="min-w-0 flex-1">
-                    <h2 className="m-0 text-[14px] font-black text-[var(--pf-text)]" id="responsible-heading">Bet responsibly</h2>
-                    <p className="m-0 mt-0.5 text-[12px] leading-relaxed">
-                        Betting should be entertainment, never a way to make money. Only stake what you can afford to lose.
-                    </p>
-                </div>
-                <button
-                    className="shrink-0 rounded-[10px] border border-[var(--pf-accent)]/45 bg-[var(--pf-accent-soft)] px-3.5 py-2 text-[12px] font-bold text-[var(--pf-accent)] transition hover:brightness-110 active:scale-95"
-                    onClick={() => go('profile')}
-                    type="button"
-                >
-                    Set limits
-                </button>
-            </div>
-
-            <div className="grid gap-px bg-[var(--pf-border)] sm:grid-cols-3">
-                {RESPONSIBLE_POINTS.map((point, index) => (
-                    <div className="animate-fade-up bg-[var(--pf-card)] p-4" style={{ animationDelay: `${index * 70}ms` }} key={point.title}>
-                        <span className="grid size-8 place-items-center rounded-[9px] bg-[var(--pf-panel)] text-[var(--pf-accent)]">
-                            <UiIcon name={point.icon} className="size-4" />
-                        </span>
-                        <b className="mt-2 block text-[12px] text-[var(--pf-text)]">{point.title}</b>
-                        <p className="m-0 mt-1 text-[11px] leading-relaxed">{point.desc}</p>
-                    </div>
-                ))}
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-[var(--pf-border)] px-4 py-3 text-[11px]">
-                <span className="font-bold text-[var(--pf-text)]">Need help?</span>
-                <a className="transition hover:text-[var(--pf-accent)]" href="https://www.begambleaware.org" target="_blank" rel="noreferrer noopener">BeGambleAware.org</a>
-                <a className="transition hover:text-[var(--pf-accent)]" href="https://www.gamcare.org.uk" target="_blank" rel="noreferrer noopener">GamCare</a>
-                <button className="border-0 bg-transparent p-0 text-inherit transition hover:text-[var(--pf-accent)]" onClick={() => go('support')} type="button">Contact support</button>
-            </div>
-        </section>
     );
 }
 
