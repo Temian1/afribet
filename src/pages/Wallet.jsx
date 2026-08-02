@@ -1,161 +1,165 @@
 import { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
 import { useToast } from '../contexts/ToastContext';
-import { Wallet as WalletIcon } from '../components/Icons';
+import { UiIcon } from '../components/SportIcons';
+import ManualDeposit from '../components/ManualDeposit';
 import { EmptyState } from '../components/ui';
 
-const QUICK = [10, 25, 50, 100, 250, 500];
-const METHODS = [
-    { id: 'card', label: 'Card', icon: '💳' },
-    { id: 'crypto', label: 'Crypto', icon: '₿' },
-    { id: 'bank', label: 'Bank', icon: '🏦' },
-    { id: 'paypal', label: 'PayPal', icon: '🅿️' },
-];
+const QUICK = [100, 250, 500, 1000, 2000, 5000];
 
 const TX_META = {
-    deposit: { sign: '+', cls: 'text-emerald-600 dark:text-neon-green-l', chip: 'bg-neon-green/12 text-emerald-600 dark:text-neon-green-l' },
-    win: { sign: '+', cls: 'text-emerald-600 dark:text-neon-green-l', chip: 'bg-neon-green/12 text-emerald-600 dark:text-neon-green-l' },
-    bonus: { sign: '+', cls: 'text-emerald-600 dark:text-neon-green-l', chip: 'bg-gold/12 text-amber-600 dark:text-gold-l' },
-    referral: { sign: '+', cls: 'text-emerald-600 dark:text-neon-green-l', chip: 'bg-purple/12 text-purple-d dark:text-purple-l' },
-    withdraw: { sign: '-', cls: 'text-neon-red', chip: 'bg-neon-red/12 text-neon-red' },
-    bet: { sign: '-', cls: 'text-slate-500', chip: 'bg-slate-200/70 text-slate-500 dark:bg-white/[.07]' },
+    deposit: { sign: '+', tone: 'text-[var(--pf-accent)]', chip: 'bg-[var(--pf-accent-soft)] text-[var(--pf-accent)]' },
+    win: { sign: '+', tone: 'text-[var(--pf-accent)]', chip: 'bg-[var(--pf-accent-soft)] text-[var(--pf-accent)]' },
+    bonus: { sign: '+', tone: 'text-[var(--pf-accent)]', chip: 'bg-[var(--pf-warn-soft)] text-[#c98a00]' },
+    referral: { sign: '+', tone: 'text-[var(--pf-accent)]', chip: 'bg-[var(--pf-accent-soft)] text-[var(--pf-accent)]' },
+    withdrawal: { sign: '-', tone: 'text-[var(--pf-danger)]', chip: 'bg-[var(--pf-danger-soft)] text-[var(--pf-danger)]' },
+    withdraw: { sign: '-', tone: 'text-[var(--pf-danger)]', chip: 'bg-[var(--pf-danger-soft)] text-[var(--pf-danger)]' },
+    bet: { sign: '-', tone: 'text-[var(--pf-muted)]', chip: 'bg-[var(--pf-panel)] text-[var(--pf-muted)]' },
 };
 
-export default function Wallet() {
-    const { balance, deposit, withdraw, transactions } = useApp();
+const inputClass = 'w-full rounded-[11px] border border-[var(--pf-border)] bg-[var(--pf-input)] px-3 py-3 text-[14px] text-[var(--pf-text)] outline-none transition placeholder:text-[var(--pf-faint)] focus:border-[var(--pf-accent)] focus:ring-2 focus:ring-[var(--pf-accent)]/20';
+
+function WithdrawForm({ onCancel }) {
+    const { balance, withdraw } = useApp();
     const toast = useToast();
-    const [tab, setTab] = useState('deposit');
-    const [amount, setAmount] = useState(50);
-    const [method, setMethod] = useState('card');
+    const [amount, setAmount] = useState('');
     const [destination, setDestination] = useState('');
     const [busy, setBusy] = useState(false);
 
-    const submit = async () => {
-        const amt = Number(amount);
-        if (!amt || amt <= 0) return toast.error('Enter a valid amount.');
-        const m = method;
+    const submit = async (fromEvent) => {
+        fromEvent.preventDefault();
+        const value = Number(amount);
+        if (!value || value <= 0) return toast.error('Enter a valid amount.');
+        if (value > balance) return toast.error('Insufficient balance.');
+        if (!destination.trim()) return toast.error('Enter your TeleBirr number.');
         setBusy(true);
         try {
-            if (tab === 'deposit') {
-                await deposit(amt, m);
-                toast.success(`Deposit of $${amt.toFixed(2)} submitted!`, { title: 'Wallet' });
-            } else {
-                if (amt > balance) { toast.error('Insufficient balance.'); return; }
-                if (!destination.trim()) { toast.error('Enter withdrawal destination.'); return; }
-                await withdraw(amt, m, destination.trim());
-                toast.success(`Withdrawal of $${amt.toFixed(2)} submitted for review.`, { title: 'Wallet' });
-            }
-        } catch (e) {
-            toast.error(e.message ?? 'Transaction failed.');
+            await withdraw(value, 'TeleBirr', destination.trim());
+            toast.success(`Withdrawal of ${value.toLocaleString()} ETB submitted for review.`, { title: 'Wallet' });
+            setAmount('');
+            setDestination('');
+        } catch (error) {
+            toast.error(error.message ?? 'Transaction failed.');
         } finally {
             setBusy(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12 dark:bg-ink">
-            <div className="mx-auto max-w-[960px] px-4 sm:px-6">
-                <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold/15 text-amber-600 dark:text-gold-l"><WalletIcon size={22} /></span>
-                    <h1 className="font-display text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-4xl">Wallet</h1>
-                </div>
+        <form className="animate-fade-up space-y-4" onSubmit={submit}>
+            <label className="block" htmlFor="withdraw-amount">
+                <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--pf-faint)]">Amount · ETB</span>
+                <input className={`${inputClass} tabular-nums`} id="withdraw-amount" type="number" min="1" value={amount} onChange={(fromEvent) => setAmount(fromEvent.target.value)} placeholder="0.00" />
+            </label>
+            <div className="flex flex-wrap gap-2">
+                {QUICK.map((value) => (
+                    <button
+                        className={`h-9 rounded-[10px] border px-3.5 text-[13px] font-bold tabular-nums transition hover:-translate-y-0.5 active:scale-95 ${Number(amount) === value ? 'border-[var(--pf-accent)] bg-[var(--pf-accent)] text-[var(--pf-accent-ink)]' : 'border-[var(--pf-border)] bg-[var(--pf-panel)] text-[var(--pf-text)]'}`}
+                        onClick={() => setAmount(String(value))}
+                        type="button"
+                        key={value}
+                    >
+                        {value.toLocaleString()}
+                    </button>
+                ))}
+            </div>
+            <label className="block" htmlFor="withdraw-destination">
+                <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--pf-faint)]">TeleBirr number</span>
+                <input className={inputClass} id="withdraw-destination" type="tel" value={destination} onChange={(fromEvent) => setDestination(fromEvent.target.value)} placeholder="09xx xxx xxx" />
+            </label>
+            <div className="flex gap-3 pt-1">
+                <button className="h-[46px] flex-1 rounded-[12px] border border-[var(--pf-border)] bg-transparent text-[14px] font-bold text-[var(--pf-text)] transition hover:bg-[var(--pf-panel)] active:scale-95" onClick={onCancel} type="button">Cancel</button>
+                <button className="h-[46px] flex-1 rounded-[12px] border-0 bg-[var(--pf-accent)] text-[14px] font-bold text-[var(--pf-accent-ink)] transition hover:brightness-110 active:scale-95 disabled:opacity-60" disabled={busy} type="submit">
+                    {busy ? 'Submitting…' : 'Request withdrawal'}
+                </button>
+            </div>
+        </form>
+    );
+}
 
-                {/* Balance card */}
-                <div className="relative mt-6 overflow-hidden rounded-3xl border border-purple/20 bg-gradient-to-br from-purple/15 via-transparent to-gold/10 p-7">
-                    <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-purple/20 blur-3xl" />
-                    <p className="font-heading text-xs font-bold uppercase tracking-[2px] text-slate-500">Available Balance</p>
-                    <p className="mt-1 font-display text-4xl font-extrabold tabular-nums tracking-tight text-slate-950 dark:text-white sm:text-5xl">
-                        $<span className="text-gradient-gold">{balance.toFixed(2)}</span>
-                    </p>
-                    <div className="mt-5 flex gap-2" role="tablist" aria-label="Wallet action">
-                        <button onClick={() => setTab('deposit')} role="tab" aria-selected={tab === 'deposit'} className={tab === 'deposit' ? 'btn-success px-5 py-2.5 text-sm uppercase tracking-wider' : 'btn-outline px-5 py-2.5 text-sm uppercase tracking-wider'} type="button">Deposit</button>
-                        <button onClick={() => setTab('withdraw')} role="tab" aria-selected={tab === 'withdraw'} className={tab === 'withdraw' ? 'btn-danger px-5 py-2.5 text-sm uppercase tracking-wider' : 'btn-outline px-5 py-2.5 text-sm uppercase tracking-wider'} type="button">Withdraw</button>
+export default function Wallet() {
+    const { balance, transactions, setPage } = useApp();
+    const [tab, setTab] = useState('deposit');
+
+    return (
+        <div className="min-h-screen bg-[var(--pf-bg)] pb-12 text-[var(--pf-text)]">
+            <header className="relative overflow-hidden border-b border-[var(--pf-border)] bg-gradient-to-b from-[var(--pf-header-from)] to-[var(--pf-header-to)] px-4 py-7 sm:px-6">
+                <div className="pointer-events-none absolute -right-20 -top-24 size-64 rounded-full bg-[var(--pf-accent)]/10 blur-[80px]" aria-hidden="true" />
+                <div className="relative mx-auto max-w-4xl">
+                    <div className="flex items-center gap-3">
+                        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[var(--pf-panel)] text-[var(--pf-accent)]"><UiIcon name="wallet" className="size-6" /></span>
+                        <div className="min-w-0">
+                            <h1 className="m-0 text-[22px] font-black tracking-tight sm:text-[26px]">Wallet</h1>
+                            <p className="m-0 text-[13px] text-[var(--pf-muted)]">Deposit and withdraw with TeleBirr.</p>
+                        </div>
+                    </div>
+
+                    <div className="animate-fade-up mt-5 rounded-[14px] border border-[var(--pf-border)] bg-[var(--pf-card)] p-5">
+                        <span className="block text-[11px] font-bold uppercase tracking-[2px] text-[var(--pf-faint)]">Available balance</span>
+                        <b className="mt-1 block text-[32px] font-black tabular-nums tracking-tight text-[var(--pf-text)] sm:text-[40px]">
+                            {balance.toFixed(2)} <span className="text-[18px] text-[var(--pf-accent)] sm:text-[22px]">ETB</span>
+                        </b>
                     </div>
                 </div>
+            </header>
 
-                <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-                    {/* Form */}
-                    <div className="card p-6">
-                        <h2 className="font-heading text-sm font-bold uppercase tracking-[1.5px] text-slate-500">{tab === 'deposit' ? 'Add Funds' : 'Cash Out'}</h2>
-
-                        <p className="field-label mt-5">Payment method</p>
-                        <div className="grid grid-cols-4 gap-2">
-                            {METHODS.map((m) => (
-                                <button key={m.id} onClick={() => setMethod(m.id)} type="button" aria-pressed={method === m.id}
-                                    className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-3 text-xs font-bold transition ${method === m.id ? 'border-purple bg-purple/12 text-purple-d shadow-md shadow-purple/10 dark:bg-purple/20 dark:text-purple-l' : 'border-[var(--pf-border)] text-slate-500 hover:border-purple/40 dark:text-slate-400'}`}>
-                                    <span className="text-xl">{m.icon}</span>{m.label}
-                                </button>
-                            ))}
-                        </div>
-
-                        <label className="field-label mt-5" htmlFor="wallet-amount">Amount</label>
-                        <div className="flex items-center rounded-xl border border-[var(--pf-border)] bg-slate-50 px-3.5 transition focus-within:border-purple-l focus-within:ring-4 focus-within:ring-purple/10 dark:bg-white/[.04]">
-                            <span className="font-display text-lg font-bold text-amber-600 dark:text-gold-l">$</span>
-                            <input id="wallet-amount" type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-transparent px-2 py-3 font-display text-lg tabular-nums outline-none" />
-                        </div>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                            {QUICK.map((q) => (
-                                <button key={q} onClick={() => setAmount(q)} type="button" aria-pressed={Number(amount) === q}
-                                    className={`rounded-xl border px-3.5 py-1.5 font-heading text-sm font-bold tabular-nums transition ${Number(amount) === q ? 'border-gold bg-gold/15 text-amber-700 dark:text-gold-l' : 'border-[var(--pf-border)] text-slate-600 hover:border-gold/50 dark:text-slate-300'}`}>
-                                    ${q}
-                                </button>
-                            ))}
-                        </div>
-
-                        {tab === 'withdraw' && (
-                            <div className="animate-fade-in">
-                                <label className="field-label mt-5" htmlFor="wallet-destination">Destination Address / Account</label>
-                                <input
-                                    id="wallet-destination"
-                                    type="text"
-                                    value={destination}
-                                    onChange={(e) => setDestination(e.target.value)}
-                                    placeholder="Wallet address or account number"
-                                    className="input"
-                                />
-                            </div>
-                        )}
-
-                        <button onClick={submit} disabled={busy}
-                            className={`${tab === 'deposit' ? 'btn-success' : 'btn-danger'} mt-6 w-full py-4 text-base uppercase tracking-[2px]`} type="button">
-                            {busy ? 'Processing…' : tab === 'deposit' ? `Deposit $${Number(amount) || 0}` : `Withdraw $${Number(amount) || 0}`}
+            <div className="mx-auto max-w-4xl px-4 sm:px-6">
+                <div className="mt-4 flex gap-2" role="tablist" aria-label="Wallet action">
+                    {[['deposit', 'Deposit', 'upload'], ['withdraw', 'Withdraw', 'wallet']].map(([id, label, icon]) => (
+                        <button
+                            className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-[19px] border text-[13px] font-bold transition active:scale-95 ${tab === id ? 'border-transparent bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[0_0_20px_rgba(57,245,173,.22)]' : 'border-[var(--pf-border)] bg-[var(--pf-card)] text-[var(--pf-text)] hover:bg-[var(--pf-panel)]'}`}
+                            onClick={() => setTab(id)}
+                            role="tab"
+                            aria-selected={tab === id}
+                            type="button"
+                            key={id}
+                        >
+                            <UiIcon name={icon} className={`size-4 ${id === 'withdraw' ? '' : 'rotate-180'}`} />{label}
                         </button>
-                        <p className="mt-3 text-center text-xs text-slate-500">
-                            {tab === 'deposit' ? 'Funds are credited instantly. No deposit fees.' : 'Withdrawals are reviewed within minutes. Crypto network fees may apply.'}
-                        </p>
-                    </div>
+                    ))}
+                </div>
 
-                    {/* History */}
-                    <div className="card p-6">
-                        <h2 className="font-heading text-sm font-bold uppercase tracking-[1.5px] text-slate-500">Transactions</h2>
-                        <div className="mt-4 grid gap-2">
-                            {transactions.length === 0 && (
-                                <EmptyState
-                                    title="No transactions yet"
-                                    description="Your deposits, withdrawals, bets and wins will appear here."
-                                />
-                            )}
-                            {transactions.map((t) => {
-                                const meta = TX_META[t.type] ?? TX_META.bet;
-                                const displayAmt = typeof t.amount === 'number' ? t.amount : parseFloat(t.amount ?? 0);
-                                const time = t.time ?? (t.created_at ? new Date(t.created_at).toLocaleDateString() : '');
+                <div className="mt-3 grid gap-3 lg:grid-cols-[1.15fr_1fr]">
+                    <section className="rounded-[14px] border border-[var(--pf-border)] bg-[var(--pf-card)] p-4 sm:p-5" key={tab}>
+                        {tab === 'deposit'
+                            ? <ManualDeposit onCancel={() => setPage('home')} />
+                            : <WithdrawForm onCancel={() => setPage('home')} />}
+                    </section>
+
+                    <section className="rounded-[14px] border border-[var(--pf-border)] bg-[var(--pf-card)] p-4 sm:p-5">
+                        <h2 className="m-0 flex items-center gap-2 text-[15px] font-black">
+                            <span className="text-[var(--pf-accent)]"><UiIcon name="results" className="size-5" /></span>Transactions
+                        </h2>
+                        <div className="mt-3 grid gap-2">
+                            {transactions.length === 0 ? (
+                                <EmptyState title="No transactions yet" description="Your deposits, withdrawals, bets and wins will appear here." />
+                            ) : null}
+                            {transactions.map((entry, index) => {
+                                const meta = TX_META[entry.type] ?? TX_META.bet;
+                                const value = typeof entry.amount === 'number' ? entry.amount : parseFloat(entry.amount ?? 0);
+                                const time = entry.time ?? (entry.created_at ? new Date(entry.created_at).toLocaleDateString() : '');
                                 return (
-                                    <div key={t.id} className="flex items-center justify-between gap-3 rounded-xl border border-[var(--pf-border)] px-3.5 py-3 transition hover:border-[var(--pf-border)] dark:hover:border-white/10">
-                                        <div className="flex min-w-0 items-center gap-3">
-                                            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-black uppercase ${meta.chip}`}>
-                                                {meta.sign}
-                                            </span>
-                                            <div className="min-w-0">
-                                                <p className="truncate text-sm font-semibold capitalize text-slate-900 dark:text-slate-100">{t.type}</p>
-                                                <p className="truncate text-xs text-slate-500">{t.method ? `${t.method} · ` : ''}{time}</p>
-                                            </div>
+                                    <div
+                                        className="animate-fade-up flex items-center justify-between gap-3 rounded-[11px] border border-[var(--pf-border)] px-3 py-2.5 transition hover:border-[var(--pf-accent)]/35"
+                                        style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+                                        key={entry.id}
+                                    >
+                                        <span className={`grid size-9 shrink-0 place-items-center rounded-[10px] text-[14px] font-black ${meta.chip}`}>{meta.sign}</span>
+                                        <div className="min-w-0 flex-1">
+                                            <p className="m-0 truncate text-[13px] font-bold capitalize">{entry.type}</p>
+                                            <p className="m-0 truncate text-[11px] text-[var(--pf-muted)]">
+                                                {entry.method ? `${entry.method} · ` : ''}{entry.reference ? `${entry.reference} · ` : ''}{time}
+                                            </p>
                                         </div>
-                                        <span className={`font-display text-sm font-bold tabular-nums ${meta.cls}`}>{meta.sign}${displayAmt.toFixed(2)}</span>
+                                        <div className="shrink-0 text-right">
+                                            <b className={`block text-[13px] font-bold tabular-nums ${meta.tone}`}>{meta.sign}{Math.abs(value).toFixed(2)}</b>
+                                            {entry.status === 'pending' ? <span className="block text-[10px] font-bold uppercase text-[#c98a00]">Pending</span> : null}
+                                        </div>
                                     </div>
                                 );
                             })}
                         </div>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>
