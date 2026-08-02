@@ -25,7 +25,7 @@ export default function Casino() {
         <div className="min-h-screen bg-slate-50 dark:bg-ink">
             <Carousel />
 
-            <div className="sticky top-[113px] xl:top-[74px] z-30 border-b border-[var(--pf-border)] bg-white/92 py-3 backdrop-blur-xl dark:bg-ink-2/92">
+            <div className="sticky top-[112px] xl:top-[115px] z-30 border-b border-[var(--pf-border)] bg-white/92 py-3 backdrop-blur-xl dark:bg-ink-2/92">
                 <div className="shell flex flex-wrap items-center gap-3">
                     <div className="no-scrollbar flex flex-1 gap-1.5 overflow-x-auto">
                         {CATS.map((catItem) => (

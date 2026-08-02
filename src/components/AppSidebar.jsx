@@ -38,7 +38,7 @@ export default function AppSidebar({ open, onClose, onNavigate, onOpenAuth }) {
 
     return (
         <Portal>
-            <div className="fixed inset-0 z-[95] xl:hidden" role="dialog" aria-modal="true" aria-label="Main menu">
+            <div className="fixed inset-0 z-[95]" role="dialog" aria-modal="true" aria-label="Main menu">
                 <button className="app-drawer-backdrop absolute inset-0 border-0 bg-black/70 backdrop-blur-sm" onClick={onClose} type="button" aria-label="Close menu" />
 
                 <aside className="app-drawer absolute inset-y-0 left-0 flex w-[85%] max-w-[340px] flex-col border-r border-[var(--pf-border)] bg-[var(--pf-card)] text-[var(--pf-text)] shadow-2xl">
