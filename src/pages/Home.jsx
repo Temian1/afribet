@@ -246,7 +246,13 @@ function HomeFooter({ go }) {
         ['Discord', BrandDiscord],
     ];
     return (
-        <footer className="order-6 mx-1 mt-8 border-t border-[var(--pf-border)] pb-8 pt-5 text-[var(--pf-muted)] xl:mx-0 xl:mt-10">
+        <>
+            <p className="order-6 mx-1 mt-8 flex items-center gap-2 text-[11px] text-[var(--pf-faint)] xl:mx-0 xl:mt-10">
+                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-[var(--pf-danger)] text-[9px] font-black text-[var(--pf-danger)]">18+</span>
+                Bet responsibly. Only stake what you can afford to lose.
+            </p>
+
+            <footer className="order-7 mx-1 mt-4 border-t border-[var(--pf-border)] pb-8 pt-5 text-[var(--pf-muted)] xl:mx-0">
             <div className="flex items-center justify-between gap-4">
                 <Brand size="lg" onClick={() => go('home')} />
                 <div className="flex gap-2">
@@ -266,12 +272,8 @@ function HomeFooter({ go }) {
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('sports')} type="button">Sports</button>
                 <button className="border-0 bg-transparent p-0 text-inherit" onClick={() => go('casino')} type="button">Casino</button>
             </nav>
-
-            <p className="mt-5 flex items-center gap-2 text-[11px] text-[var(--pf-faint)]">
-                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-[var(--pf-danger)] text-[9px] font-black text-[var(--pf-danger)]">18+</span>
-                Bet responsibly. Only stake what you can afford to lose.
-            </p>
-        </footer>
+            </footer>
+        </>
     );
 }
 
