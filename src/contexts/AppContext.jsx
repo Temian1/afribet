@@ -30,10 +30,10 @@ function makeReferral(email) {
 
 export function AppProvider({ children }) {
   const { user } = useAuth();
-  const initialWallet = useMemo(() => readWallet(user?.email), [user?.email]);
+  const initialWallet = useMemo(() => readWallet(user?.accountId), [user?.accountId]);
   const [balance, setBalance] = useState(initialWallet.balance);
   const [transactions, setTransactions] = useState(initialWallet.transactions);
-  const [walletOwner, setWalletOwner] = useState(user?.email ?? null);
+  const [walletOwner, setWalletOwner] = useState(user?.accountId ?? null);
   const [page, setPage] = useState(() => {
     const saved = localStorage.getItem(PAGE_KEY);
     return VALID_PAGES.has(saved) ? saved : 'home';
@@ -42,16 +42,16 @@ export function AppProvider({ children }) {
   const [currentEvent, setCurrentEvent] = useState(() => localStorage.getItem(EVENT_KEY));
 
   useEffect(() => {
-    const wallet = readWallet(user?.email);
+    const wallet = readWallet(user?.accountId);
     setBalance(wallet.balance);
     setTransactions(wallet.transactions);
-    setWalletOwner(user?.email ?? null);
-  }, [user?.email]);
+    setWalletOwner(user?.accountId ?? null);
+  }, [user?.accountId]);
 
   useEffect(() => {
-    if (!user?.email || walletOwner !== user.email) return;
-    localStorage.setItem(walletKey(user.email), JSON.stringify({ balance, transactions }));
-  }, [balance, transactions, user?.email, walletOwner]);
+    if (!user?.accountId || walletOwner !== user?.accountId) return;
+    localStorage.setItem(walletKey(user?.accountId), JSON.stringify({ balance, transactions }));
+  }, [balance, transactions, user?.accountId, walletOwner]);
 
   useEffect(() => localStorage.setItem(PAGE_KEY, page), [page]);
   useEffect(() => {
@@ -71,7 +71,7 @@ export function AppProvider({ children }) {
     setTransactions((current) => [{ id: globalThis.crypto?.randomUUID?.() ?? Date.now(), time: 'Just now', ...transaction }, ...current].slice(0, 50));
   }, []);
 
-  const loadWallet = useCallback(async () => readWallet(user?.email), [user?.email]);
+  const loadWallet = useCallback(async () => readWallet(user?.accountId), [user?.accountId]);
   const loadTransactions = useCallback(async () => transactions, [transactions]);
 
   const deposit = useCallback(async (amount, method = 'Demo Card') => {
@@ -102,7 +102,7 @@ export function AppProvider({ children }) {
     withdraw,
     walletLoading: false,
     loadWallet,
-    referral: makeReferral(user?.email),
+    referral: makeReferral(user?.accountId),
     referrals: { count: 0, earned: 0, pending: 0 },
     page,
     setPage,
@@ -110,7 +110,7 @@ export function AppProvider({ children }) {
     setCurrentGame,
     currentEvent,
     setCurrentEvent,
-  }), [addTransaction, balance, currentEvent, currentGame, deposit, loadTransactions, loadWallet, page, transactions, updateBalance, user?.email, withdraw]);
+  }), [addTransaction, balance, currentEvent, currentGame, deposit, loadTransactions, loadWallet, page, transactions, updateBalance, user?.accountId, withdraw]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

@@ -27,11 +27,11 @@
   --color-violet-800: #075a41;
   --color-violet-900: #073a2c;
 
-  /* ---- Surfaces (dark) ---- */
-  --color-ink: #030810;
-  --color-ink-2: #0b162a;
-  --color-ink-3: #101c32;
-  --color-ink-4: #192338;
+  /* ---- Surfaces (dark green) ---- */
+  --color-ink: #02110b;
+  --color-ink-2: #07271b;
+  --color-ink-3: #0c3524;
+  --color-ink-4: #12482f;
 
   /* ---- UI animations → animate-fade-up, animate-marquee, ... ---- */
   --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -366,44 +366,44 @@
 
 [data-theme="dark"] .platform-content .bg-white,
 [data-theme="dark"] .platform-content .card {
-  background-color: #0b162a !important;
-  border-color: #263752 !important;
-  color: #f8fafc;
+  background-color: var(--pf-card) !important;
+  border-color: var(--pf-border) !important;
+  color: var(--pf-text);
 }
 
 [data-theme="dark"] .platform-content .text-slate-950,
 [data-theme="dark"] .platform-content .text-slate-900,
 [data-theme="dark"] .platform-content .text-slate-800 {
-  color: #f8fafc !important;
+  color: var(--pf-text) !important;
 }
 
 [data-theme="dark"] .platform-content .text-slate-700,
 [data-theme="dark"] .platform-content .text-slate-600 {
-  color: #b7c6dc !important;
+  color: var(--pf-muted) !important;
 }
 
 [data-theme="dark"] .platform-content .text-slate-500,
 [data-theme="dark"] .platform-content .text-slate-400 {
-  color: #7ea0cf !important;
+  color: var(--pf-faint) !important;
 }
 
 [data-theme="dark"] .platform-content .border-slate-100,
 [data-theme="dark"] .platform-content .border-slate-200,
 [data-theme="dark"] .platform-content .border-slate-300 {
-  border-color: #263752 !important;
+  border-color: var(--pf-border) !important;
 }
 
 [data-theme="dark"] .platform-content input,
 [data-theme="dark"] .platform-content textarea,
 [data-theme="dark"] .platform-content select {
-  border-color: #263752 !important;
-  background-color: #071328 !important;
-  color: #f8fafc !important;
+  border-color: var(--pf-border) !important;
+  background-color: var(--pf-input) !important;
+  color: var(--pf-text) !important;
 }
 
 [data-theme="dark"] .platform-content .card-hover {
-  background: linear-gradient(145deg, #0d1b31, #091426) !important;
-  border-color: #263752 !important;
+  background: linear-gradient(145deg, var(--pf-card), var(--pf-surface)) !important;
+  border-color: var(--pf-border) !important;
 }
 
 [data-theme="dark"] .platform-content .card-hover:hover {
@@ -436,27 +436,28 @@
   --pf-shadow: 0 10px 30px rgba(15, 23, 42, .07);
 }
 
+/* Dark mode runs on a deep-green surface ramp rather than navy. */
 [data-theme="dark"] {
-  --pf-bg: #030810;
-  --pf-surface: #071226;
-  --pf-card: #0b1930;
-  --pf-panel: #12233f;
-  --pf-hover: #1a2f52;
-  --pf-input: #071328;
-  --pf-border: #22314c;
+  --pf-bg: #02110b;
+  --pf-surface: #051c13;
+  --pf-card: #07271b;
+  --pf-panel: #0c3524;
+  --pf-hover: #12482f;
+  --pf-input: #04180f;
+  --pf-border: #1a4531;
   --pf-text: #ffffff;
-  --pf-muted: #7ea9ec;
-  --pf-faint: #5f83b8;
+  --pf-muted: #8dc6ac;
+  --pf-faint: #63a186;
   --pf-accent: #39f5ad;
   --pf-accent-ink: #03150e;
-  --pf-accent-soft: #14392f;
-  --pf-danger: #ff6b85;
-  --pf-danger-soft: #3a1220;
-  --pf-warn-soft: #33260c;
-  --pf-header-from: #0b1c38;
-  --pf-header-to: #071226;
-  --pf-odds-label: #4f8ff7;
-  --pf-shadow: 0 15px 40px rgba(0, 0, 0, .22);
+  --pf-accent-soft: #0e3d2a;
+  --pf-danger: #ff7b90;
+  --pf-danger-soft: #3a1620;
+  --pf-warn-soft: #33290c;
+  --pf-header-from: #0a2c1e;
+  --pf-header-to: #051c13;
+  --pf-odds-label: #4fd6a6;
+  --pf-shadow: 0 15px 40px rgba(0, 0, 0, .32);
 }
 
 /* Stadium turf banner on the event page — mown stripes plus a floodlit centre,
@@ -528,675 +529,3 @@
   }
 }
 
-/* Desktop dashboard — intentionally isolated from the existing mobile UI. */
-@media (min-width: 1280px) {
-  .desktop-reference {
-    --aqua: #39f5ad;
-    --aqua-dark: #00c981;
-    --desktop-bg: #030810;
-    --desktop-navy: #071226;
-    --desktop-panel: #101c32;
-    --desktop-panel-2: #0b162a;
-    position: relative;
-    min-height: 100vh;
-    overflow: hidden;
-    background: var(--desktop-bg);
-    color: #f8fafc;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
-
-  .desktop-reference button {
-    font: inherit;
-  }
-
-  .desktop-sidebar {
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 50;
-    display: flex;
-    width: 264px;
-    flex-direction: column;
-    background: #071327;
-    box-shadow: 1px 0 0 rgba(255, 255, 255, 0.025);
-  }
-
-  .desktop-side-top {
-    display: flex;
-    height: 74px;
-    flex: 0 0 74px;
-    align-items: center;
-    gap: 10px;
-    padding: 0 9px;
-    background: #071226;
-  }
-
-  .desktop-menu-button,
-  .desktop-search {
-    display: inline-flex;
-    height: 45px;
-    width: 45px;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: 20px;
-    background: #111d34;
-    color: #f4f8ff;
-    font-size: 24px;
-    line-height: 1;
-  }
-
-  .desktop-brand {
-    display: inline-flex;
-    align-items: center;
-    border: 0;
-    background: transparent;
-    color: var(--aqua);
-  }
-
-  .desktop-brand-ball {
-    width: 20px;
-    overflow: hidden;
-    font-size: 27px;
-    line-height: 1;
-    transform: rotate(-18deg);
-  }
-
-  .desktop-brand-name {
-    position: relative;
-    font-size: 31px;
-    font-weight: 600;
-    letter-spacing: -2.6px;
-    line-height: 1;
-  }
-
-  .desktop-brand-name small {
-    position: absolute;
-    right: 1px;
-    top: 28px;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0;
-  }
-
-  .desktop-mode-tabs {
-    display: flex;
-    height: 70px;
-    flex: 0 0 70px;
-    align-items: flex-start;
-    gap: 7px;
-    padding: 9px 8px 0;
-  }
-
-  .desktop-mode-tabs button {
-    display: flex;
-    height: 44px;
-    align-items: center;
-    gap: 8px;
-    border: 0;
-    border-radius: 0 22px 22px 0;
-    background: #183468;
-    padding: 0 15px 0 0;
-    color: #f1f5f9;
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  .desktop-mode-tabs button + button {
-    border-radius: 0 22px 22px 0;
-  }
-
-  .desktop-mode-tabs span {
-    display: grid;
-    height: 44px;
-    width: 42px;
-    place-items: center;
-    border-radius: 22px;
-    background: linear-gradient(145deg, #e5e7eb, #394150);
-    color: #111827;
-    font-size: 26px;
-    filter: grayscale(.3);
-  }
-
-  .desktop-mode-tabs button + button span {
-    background: linear-gradient(145deg, #5a5a59, #121418);
-    color: #d7d7d4;
-  }
-
-  .desktop-side-nav {
-    margin: 7px 8px 0;
-    padding: 9px;
-    border-radius: 9px;
-    background: #192338;
-  }
-
-  .desktop-side-nav button {
-    display: flex;
-    width: 100%;
-    height: 55px;
-    align-items: center;
-    gap: 19px;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    padding: 0 15px;
-    color: #78a4ff;
-    text-align: left;
-    font-size: 15px;
-    font-weight: 650;
-  }
-
-  .desktop-side-nav button.active {
-    background: #071327;
-    color: var(--aqua);
-  }
-
-  .desktop-side-nav svg {
-    width: 27px;
-    height: 27px;
-    flex: 0 0 27px;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.8;
-  }
-
-  .desktop-theme-switch {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    margin: auto 8px 8px;
-    padding: 9px;
-    border-radius: 9px;
-    background: #111d34;
-  }
-
-  .desktop-theme-switch button {
-    height: 41px;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    color: #88a8df;
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .desktop-theme-switch button.active {
-    background: #193669;
-    color: white;
-  }
-
-  .desktop-topbar {
-    position: fixed;
-    inset: 0 0 auto 264px;
-    z-index: 40;
-    display: flex;
-    height: 74px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 23px;
-    background: #071226;
-  }
-
-  .desktop-search {
-    font-family: Georgia, serif;
-    font-size: 34px;
-    font-weight: 700;
-    transform: rotate(-15deg);
-  }
-
-  .desktop-account {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-  }
-
-  .desktop-account > button {
-    height: 45px;
-    border: 0;
-    font-weight: 700;
-  }
-
-  .bonus-wheel {
-    width: 45px;
-    margin-right: 1px;
-    border: 6px solid #ffb400 !important;
-    border-radius: 50%;
-    background: conic-gradient(#f34 0 12.5%, #eff6ff 0 25%, #4aa3ee 0 37.5%, #eff6ff 0 50%, #f34 0 62.5%, #eff6ff 0 75%, #4aa3ee 0 87.5%, #eff6ff 0) !important;
-    color: #f59e0b;
-    font-size: 16px;
-    box-shadow: inset 0 0 0 2px #fff;
-  }
-
-  .desktop-signin,
-  .desktop-signup {
-    border-radius: 18px;
-    padding: 0 17px;
-    font-size: 15px;
-  }
-
-  .desktop-signin {
-    background: #f8fafc;
-    color: #0f1115;
-  }
-
-  .desktop-signup {
-    background: var(--aqua);
-    color: #02130d;
-  }
-
-  .desktop-language,
-  .desktop-settings {
-    width: 41px;
-    border: 1px solid #52637d !important;
-    background: #122037;
-    font-size: 20px;
-  }
-
-  .desktop-language {
-    border-radius: 20px 0 0 20px;
-  }
-
-  .desktop-settings {
-    margin-left: -10px;
-    border-left: 0 !important;
-    border-radius: 0 20px 20px 0;
-    color: var(--aqua);
-  }
-
-  .desktop-content {
-    min-height: 100vh;
-    margin-left: 264px;
-    padding: 142px 23px 28px;
-    background: #030810;
-  }
-
-  .desktop-winner-strip {
-    display: flex;
-    height: 103px;
-    gap: 12px;
-    overflow: hidden;
-    padding: 10px 12px;
-    border: 1px solid #273650;
-    border-radius: 9px;
-    background: #0b1528;
-  }
-
-  .winner-card {
-    display: flex;
-    min-width: 153px;
-    height: 80px;
-    align-items: center;
-    gap: 8px;
-    border-radius: 6px;
-    background: #182338;
-    padding: 5px;
-    overflow: hidden;
-  }
-
-  .winner-art {
-    display: flex;
-    width: 54px;
-    height: 70px;
-    flex: 0 0 54px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border-radius: 6px;
-    background: linear-gradient(155deg, #ff375f, #d500b6);
-    color: white;
-    text-align: center;
-    text-shadow: 0 1px 2px #4b003d;
-  }
-
-  .winner-art b {
-    font-size: 22px;
-    line-height: 1;
-  }
-
-  .winner-art span {
-    margin-top: 4px;
-    font-size: 7px;
-    font-weight: 900;
-    line-height: 1;
-  }
-
-  .winner-art.gold { background: linear-gradient(155deg, #16120c, #4f2e00); color: #ffd35b; }
-  .winner-art.queen { background: linear-gradient(155deg, #ff315f, #95186e); color: #ffe0a0; }
-  .winner-art.space { background: linear-gradient(155deg, #0967b0, #eb00d7); }
-  .winner-art.goldhit { background: linear-gradient(155deg, #d14c00, #ff8d00); color: #fff1b0; }
-  .winner-art.bingo { background: linear-gradient(155deg, #b5169d, #d83cd3); }
-
-  .winner-copy {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 3px;
-    color: #8bb2ee;
-    font-size: 10px;
-  }
-
-  .winner-copy span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .winner-copy .winner-player {
-    color: #b9d0f4;
-    font-size: 9px;
-  }
-
-  .winner-player::first-letter {
-    color: #ffba33;
-  }
-
-  .winner-copy strong {
-    color: var(--aqua);
-    font-size: 11px;
-  }
-
-  .desktop-events {
-    margin-top: 59px;
-  }
-
-  .desktop-section-heading {
-    display: flex;
-    height: 42px;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  .desktop-section-heading h1,
-  .desktop-section-heading h2 {
-    margin: 0;
-    color: #fff;
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -.4px;
-  }
-
-  .desktop-section-heading > button,
-  .desktop-section-heading > div > button:not(.round-arrow) {
-    min-width: 82px;
-    height: 42px;
-    border: 0;
-    border-radius: 19px;
-    background: var(--aqua);
-    padding: 0 12px;
-    color: #03150e;
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .desktop-sport-tabs {
-    display: flex;
-    height: 58px;
-    align-items: flex-start;
-    gap: 5px;
-    overflow: hidden;
-  }
-
-  .desktop-sport-tabs button {
-    display: inline-flex;
-    height: 42px;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 4px;
-    border: 0;
-    border-radius: 20px;
-    background: transparent;
-    padding: 0 8px;
-    color: #e4e7eb;
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .desktop-sport-tabs button.active {
-    background: var(--aqua);
-    color: #02140d;
-    padding: 0 12px;
-  }
-
-  .desktop-sport-tabs span {
-    font-size: 24px;
-    filter: grayscale(1) brightness(2.2);
-  }
-
-  .desktop-sport-tabs button.active span {
-    filter: none;
-  }
-
-  .desktop-matches {
-    display: flex;
-    gap: 17px;
-    overflow: hidden;
-  }
-
-  .desktop-match-card {
-    min-width: 360px;
-    height: 244px;
-    border-radius: 9px;
-    background: #071328;
-    padding: 20px 18px 18px;
-  }
-
-  .desktop-match-card.featured {
-    background: #102445;
-  }
-
-  .match-title-row {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .match-title-row div {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-  }
-
-  .match-title-row b {
-    color: #edf2fb;
-    font-size: 13px;
-  }
-
-  .match-title-row span {
-    margin-top: 2px;
-    color: #7ea9ec;
-    font-size: 11px;
-    white-space: nowrap;
-  }
-
-  .match-title-row i {
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    margin: 0 4px;
-    border-radius: 50%;
-    background: #266ad8;
-  }
-
-  .match-title-row button {
-    border: 0;
-    background: transparent;
-    color: #fff;
-    font-size: 25px;
-    line-height: 1;
-  }
-
-  .match-teams {
-    margin-top: 17px;
-  }
-
-  .match-teams p {
-    display: flex;
-    height: 32px;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-  }
-
-  .match-teams i {
-    display: grid;
-    width: 24px;
-    height: 24px;
-    place-items: center;
-    border-radius: 50%;
-    background: #e9f1f6;
-    color: #153463;
-    font-style: normal;
-    font-size: 13px;
-    font-weight: 900;
-  }
-
-  .match-teams p:first-child i {
-    color: #99770a;
-  }
-
-  .match-teams b {
-    overflow: hidden;
-    color: #f0f2f7;
-    font-size: 17px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .match-market {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    color: #7ea9ec;
-    font-size: 13px;
-  }
-
-  .match-market span:last-child {
-    color: #96bbf5;
-    font-size: 16px;
-  }
-
-  .odds-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr) 67px;
-    gap: 7px;
-    margin-top: 9px;
-  }
-
-  .odds-row button {
-    display: flex;
-    height: 49px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: 9px;
-    background: #0b1931;
-    color: #768195;
-  }
-
-  .odds-row small {
-    color: #49658e;
-    font-size: 10px;
-  }
-
-  .odds-row b {
-    margin-top: 4px;
-    font-size: 15px;
-  }
-
-  .odds-row .more-odds {
-    background: var(--aqua);
-    color: #061810;
-    font-size: 14px;
-    font-weight: 800;
-  }
-
-  .desktop-casino {
-    margin-top: 23px;
-  }
-
-  .desktop-section-heading.casino-heading {
-    height: 61px;
-    align-items: flex-start;
-  }
-
-  .casino-heading > div {
-    display: flex;
-    gap: 5px;
-  }
-
-  .casino-heading .round-arrow {
-    min-width: 42px;
-    width: 42px;
-    height: 42px;
-    border: 0;
-    border-radius: 50%;
-    background: #10203b;
-    color: #e6eefc;
-    font-size: 25px;
-  }
-
-  .desktop-casino-rail {
-    display: flex;
-    height: 220px;
-    gap: 10px;
-    overflow: hidden;
-  }
-
-  .desktop-casino-card {
-    position: relative;
-    display: block;
-    min-width: 151px;
-    height: 214px;
-    overflow: hidden;
-    border: 1px solid #263755;
-    border-radius: 9px;
-    background: #101c31;
-    padding: 0;
-    text-align: left;
-  }
-
-  .casino-art {
-    position: absolute;
-    inset: 0;
-    display: block;
-  }
-
-  .casino-art svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .desktop-casino-card:nth-child(2n) .casino-art {
-    filter: hue-rotate(25deg) saturate(1.2);
-  }
-
-  .desktop-casino-card:nth-child(3n) .casino-art {
-    filter: hue-rotate(-25deg) saturate(1.3);
-  }
-
-  .casino-favorite {
-    position: absolute;
-    z-index: 2;
-    right: 7px;
-    top: 6px;
-    color: white;
-    font-size: 25px;
-    line-height: 1;
-    text-shadow: 0 1px 4px #000;
-  }
-
-  .casino-name {
-    position: absolute;
-    z-index: 2;
-    inset: auto 0 0;
-    padding: 21px 10px 10px;
-    background: linear-gradient(transparent, rgba(2, 8, 16, .94));
-    color: #fff;
-    font-size: 13px;
-    font-weight: 800;
-    text-shadow: 0 1px 2px #000;
-  }
-}

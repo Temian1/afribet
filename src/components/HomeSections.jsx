@@ -142,7 +142,7 @@ export function LiveWinners() {
 /* ------------------------------------------------------------------ */
 
 const STEPS = [
-    { n: '01', title: 'Create your account', desc: 'Sign up in under 30 seconds with email or Google. No paperwork.' },
+    { n: '01', title: 'Create your account', desc: 'Sign up in under 30 seconds with your phone number or Telegram. No paperwork.' },
     { n: '02', title: 'Make a deposit', desc: 'Cards, bank transfer or crypto — funds appear instantly with a welcome bonus on top.' },
     { n: '03', title: 'Play & win', desc: 'Bet on live sports or hit the casino floor. Withdraw winnings in minutes.' },
 ];

@@ -33,19 +33,19 @@ export default function Profile() {
     const { theme, setTheme } = useTheme();
     const toast = useToast();
     const [name, setName] = useState(user?.name || '');
-    const [seed, setSeed] = useState(user?.email || 'player');
+    const [seed, setSeed] = useState(user?.accountId || 'player');
     const [avatar, setAvatar] = useState(user?.avatar || '');
 
     useEffect(() => {
         setName(user?.name || '');
-        setSeed(user?.email || 'player');
+        setSeed(user?.accountId || 'player');
         setAvatar(user?.avatar || '');
     }, [user]);
 
     const avatars = useMemo(() => AVATAR_STYLES.map((style) => ({
         style,
-        url: avatarUrl(seed || user?.email || 'player', style),
-    })), [seed, user?.email]);
+        url: avatarUrl(seed || user?.accountId || 'player', style),
+    })), [seed, user?.accountId]);
 
     if (!user) {
         return (
@@ -69,7 +69,7 @@ export default function Profile() {
 
     const stats = [
         { icon: 'wallet', label: 'Balance', value: `₦${balance.toFixed(2)}` },
-        { icon: 'user', label: 'Sign-in', value: user.provider === 'google' ? 'Google' : 'Email' },
+        { icon: 'user', label: 'Sign-in', value: user.provider === 'telegram' ? 'Telegram' : user.phone ? 'Phone' : 'Username' },
         { icon: 'crown', label: 'Tier', value: 'VIP Active' },
         { icon: 'users', label: 'Referral', value: 'Ready' },
     ];
@@ -90,7 +90,7 @@ export default function Profile() {
                         <img className="size-16 shrink-0 rounded-2xl bg-[var(--pf-panel)] ring-2 ring-[var(--pf-accent)]/30 sm:size-20" src={avatar || user.avatar} alt={user.name} />
                         <div className="min-w-0 flex-1">
                             <h1 className="m-0 truncate text-[22px] font-black tracking-tight sm:text-[26px]">{user.name || 'Player'}</h1>
-                            <p className="m-0 truncate text-[13px] text-[var(--pf-muted)]">{user.email}</p>
+                            <p className="m-0 truncate text-[13px] text-[var(--pf-muted)]">{user?.accountId}</p>
                         </div>
                         <button className="hidden h-[40px] shrink-0 rounded-[19px] border border-[var(--pf-danger)]/35 bg-transparent px-4 text-[13px] font-bold text-[var(--pf-danger)] transition hover:bg-[var(--pf-danger-soft)] active:scale-95 sm:block" onClick={logout} type="button">
                             Sign out
@@ -169,8 +169,8 @@ export default function Profile() {
                                 <input className={inputClass} value={name} onChange={(event) => setName(event.target.value)} />
                             </label>
                             <label className="block">
-                                <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--pf-faint)]">Email</span>
-                                <input className={`${inputClass} opacity-60`} value={user.email} disabled />
+                                <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-wide text-[var(--pf-faint)]">Phone / username</span>
+                                <input className={`${inputClass} opacity-60`} value={user?.accountId} disabled />
                             </label>
                         </div>
                     </Card>

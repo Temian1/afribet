@@ -63,11 +63,11 @@ export default function AppSidebar({ open, onClose, onNavigate, onOpenAuth }) {
                             {user ? (
                                 <div className="app-drawer-item flex items-center gap-3 rounded-[14px] border border-[var(--pf-border)] bg-[var(--pf-panel)] p-3">
                                     <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[var(--pf-accent)] text-[16px] font-black text-white">
-                                        {(user.name || user.email || '?').slice(0, 1).toUpperCase()}
+                                        {(user.name || user?.accountId || '?').slice(0, 1).toUpperCase()}
                                     </span>
                                     <div className="min-w-0 flex-1">
                                         <b className="block truncate text-[14px]">{user.name || 'Player'}</b>
-                                        <span className="block truncate text-[11px] text-[var(--pf-muted)]">{user.email}</span>
+                                        <span className="block truncate text-[11px] text-[var(--pf-muted)]">{user?.accountId}</span>
                                     </div>
                                     <div className="shrink-0 text-right">
                                         <span className="block text-[10px] uppercase text-[var(--pf-faint)]">Balance</span>

@@ -8,7 +8,7 @@ import Portal from './Portal';
 function AvatarPicker({ onClose }) {
     const { user, updateAvatar } = useAuth();
     const toast = useToast();
-    const [seed, setSeed] = useState(user.email);
+    const [seed, setSeed] = useState(user?.accountId);
     const [selected, setSelected] = useState(user.avatar);
     const options = AVATAR_STYLES.map((style) => avatarUrl(seed, style));
 
@@ -99,7 +99,7 @@ export default function UserMenu() {
                         <img src={user.avatar} alt={user.name} className="h-11 w-11 rounded-full bg-slate-100 dark:bg-white/10" />
                         <div className="min-w-0">
                             <p className="truncate text-sm font-bold text-slate-900 dark:text-slate-100">{user.name}</p>
-                            <p className="truncate text-xs text-slate-500">{user.email}</p>
+                            <p className="truncate text-xs text-slate-500">{user?.accountId}</p>
                         </div>
                     </div>
                     <div className="p-1.5">

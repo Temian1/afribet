@@ -4,13 +4,13 @@ import { UiIcon } from './SportIcons';
 
 const SEGMENTS = [
     { label: '10 Free Spins', color: '#39f5ad', text: '#03150e' },
-    { label: '5% Cashback', color: '#12233f', text: '#ffffff' },
+    { label: '5% Cashback', color: '#0c3524', text: '#ffffff' },
     { label: '₦500 Bonus', color: '#ffb400', text: '#241700' },
-    { label: 'Try Again', color: '#12233f', text: '#ffffff' },
+    { label: 'Try Again', color: '#0c3524', text: '#ffffff' },
     { label: 'Free Bet', color: '#5aa9ff', text: '#04203f' },
-    { label: '2x Odds Boost', color: '#12233f', text: '#ffffff' },
+    { label: '2x Odds Boost', color: '#0c3524', text: '#ffffff' },
     { label: '₦1,000 Bonus', color: '#f472b6', text: '#33091f' },
-    { label: 'Mystery Gift', color: '#12233f', text: '#ffffff' },
+    { label: 'Mystery Gift', color: '#0c3524', text: '#ffffff' },
 ];
 
 const SLICE = 360 / SEGMENTS.length;
@@ -36,10 +36,10 @@ function WheelFace({ rotation, spinning, size = 'size-full' }) {
             aria-hidden="true"
         >
             {SEGMENTS.map((segment, index) => (
-                <path d={slicePath(index)} fill={segment.color} stroke="#071226" strokeWidth="0.8" key={segment.label} />
+                <path d={slicePath(index)} fill={segment.color} stroke="var(--pf-surface)" strokeWidth="0.8" key={segment.label} />
             ))}
             <circle cx="50" cy="50" r="48" fill="none" stroke="#ffb400" strokeWidth="3" />
-            <circle cx="50" cy="50" r="9" fill="#071226" stroke="#ffb400" strokeWidth="2.5" />
+            <circle cx="50" cy="50" r="9" fill="var(--pf-surface)" stroke="#ffb400" strokeWidth="2.5" />
         </svg>
     );
 }

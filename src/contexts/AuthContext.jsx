@@ -21,20 +21,32 @@ function readSession() {
   }
 }
 
-function displayNameFromEmail(email) {
-  const localPart = email.split('@')[0].replace(/[._-]+/g, ' ').trim();
-  return localPart
-    ? localPart.replace(/\b\w/g, (letter) => letter.toUpperCase())
-    : 'Demo Player';
+/** Accounts are keyed by phone number or username — never email. */
+export function isPhone(identifier = '') {
+  return /^\+?[0-9][0-9\s-]{7,}$/.test(identifier.trim());
 }
 
-function createDemoUser({ name, email, provider = 'email' }) {
-  const normalizedEmail = email.trim().toLowerCase();
+export function normalizeIdentifier(identifier = '') {
+  const trimmed = identifier.trim();
+  return isPhone(trimmed) ? trimmed.replace(/[\s-]/g, '') : trimmed.toLowerCase();
+}
+
+function displayNameFrom(identifier) {
+  if (isPhone(identifier)) return `Player ${identifier.slice(-4)}`;
+  const readable = identifier.replace(/[._-]+/g, ' ').trim();
+  return readable ? readable.replace(/\b\w/g, (letter) => letter.toUpperCase()) : 'Demo Player';
+}
+
+function createDemoUser({ name, identifier, provider = 'password' }) {
+  const accountId = normalizeIdentifier(identifier);
+  const phone = isPhone(accountId);
   return {
     id: globalThis.crypto?.randomUUID?.() ?? `demo-${Date.now()}`,
-    name: name?.trim() || displayNameFromEmail(normalizedEmail),
-    email: normalizedEmail,
-    avatar: avatarUrl(normalizedEmail),
+    name: name?.trim() || displayNameFrom(accountId),
+    accountId,
+    username: phone ? null : accountId,
+    phone: phone ? accountId : null,
+    avatar: avatarUrl(accountId),
     provider,
     is_demo: true,
     created_at: new Date().toISOString(),
@@ -50,20 +62,22 @@ export function AuthProvider({ children }) {
     return nextUser;
   }, []);
 
-  const login = useCallback(async ({ email }) => {
-    return saveUser(createDemoUser({ email }));
+  const login = useCallback(async ({ identifier }) => {
+    if (!identifier?.trim()) throw new Error('Enter your phone number or username.');
+    return saveUser(createDemoUser({ identifier }));
   }, [saveUser]);
 
-  const register = useCallback(async ({ name, email }) => {
-    return saveUser(createDemoUser({ name, email }));
+  const register = useCallback(async ({ name, identifier }) => {
+    if (!identifier?.trim()) throw new Error('Enter a phone number or username.');
+    return saveUser(createDemoUser({ name, identifier }));
   }, [saveUser]);
 
-  const loginWithGoogle = useCallback(async () => {
+  const loginWithTelegram = useCallback(async () => {
     const suffix = Math.floor(Math.random() * 9000 + 1000);
     return saveUser(createDemoUser({
-      name: `Demo Player ${suffix}`,
-      email: `player${suffix}@demo.afribet`,
-      provider: 'google',
+      name: `Telegram Player ${suffix}`,
+      identifier: `tg_player${suffix}`,
+      provider: 'telegram',
     }));
   }, [saveUser]);
 
@@ -91,13 +105,13 @@ export function AuthProvider({ children }) {
     isDemo: true,
     login,
     register,
-    loginWithGoogle,
+    loginWithTelegram,
     requestReset,
     resetPassword,
     updateAvatar,
     updateProfile,
     logout,
-  }), [login, loginWithGoogle, logout, register, requestReset, resetPassword, updateAvatar, updateProfile, user]);
+  }), [login, loginWithTelegram, logout, register, requestReset, resetPassword, updateAvatar, updateProfile, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

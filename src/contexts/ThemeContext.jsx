@@ -22,7 +22,7 @@ export function ThemeProvider({ children }) {
         const root = document.documentElement;
         root.setAttribute('data-theme', theme);
         root.style.colorScheme = theme;
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#030810' : '#f3f6fa');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#02110b' : '#f2f6fb');
         try { localStorage.setItem(THEME_KEY, theme); } catch { /* ignore */ }
     }, [theme]);
 

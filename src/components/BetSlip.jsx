@@ -67,7 +67,7 @@ export default function BetSlip({ onLogin }) {
         if (total > balance) { toast.error('Insufficient balance for total stake.'); return; }
 
         setPlacing(true);
-        addDemoBets(user.email, legs.map((leg) => {
+        addDemoBets(user?.accountId, legs.map((leg) => {
             const stake = parseFloat(stakes[leg.marketId]);
             return {
                 sports_event_id: leg.eventId,
@@ -95,7 +95,7 @@ export default function BetSlip({ onLogin }) {
         setPlacing(true);
         try {
             const potentialWin = stake * combinedOdds;
-            addDemoBets(user.email, [{
+            addDemoBets(user?.accountId, [{
                 market_type: 'multi',
                 selection: `${items.length} selections`,
                 notes: JSON.stringify(items.map((item) => ({ event: item.eventName, selection: item.label, odds: item.odds }))),

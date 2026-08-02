@@ -32,10 +32,10 @@ export default function MyBets() {
 
     const load = useCallback(async () => {
         setLoading(true);
-        const allBets = getDemoBets(user?.email);
+        const allBets = getDemoBets(user?.accountId);
         setBets(filter ? allBets.filter((bet) => bet.status === filter) : allBets);
         setLoading(false);
-    }, [filter, user?.email]);
+    }, [filter, user?.accountId]);
 
     useEffect(() => { if (user) load(); }, [user, load]);
 
@@ -43,7 +43,7 @@ export default function MyBets() {
 
     const cashout = async (bet) => {
         setCashingOut(bet.id);
-        const amount = cashOutDemoBet(user.email, bet.id);
+        const amount = cashOutDemoBet(user?.accountId, bet.id);
         updateBalance(amount);
         addTransaction({ type: 'cash out', amount, status: 'completed', description: 'Demo sports bet cash out' });
         toast.success(`Cashed out $${amount.toFixed(2)}`, { title: 'Cash Out' });

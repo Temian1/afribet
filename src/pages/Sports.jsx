@@ -133,7 +133,7 @@ function SportsControls({ activeMode, setActiveMode }) {
                         <span className="absolute right-0.5 top-1.5 rounded-full bg-[var(--pf-panel)] px-1 text-[9px] text-[var(--pf-text)]">{count}</span>
                     </button>
                 ))}
-                <button className="sticky right-1 ml-auto grid size-9 min-w-9 shrink-0 place-items-center rounded-[7px] border-0 bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[-12px_0_16px_#071226]" type="button" aria-label="More sports"><UiIcon name="chevronDown" /></button>
+                <button className="sticky right-1 ml-auto grid size-9 min-w-9 shrink-0 place-items-center rounded-[7px] border-0 bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[-12px_0_16px_var(--pf-surface)]" type="button" aria-label="More sports"><UiIcon name="chevronDown" /></button>
             </div>
 
             <div className="flex h-[54px] items-center gap-2 border-b border-[var(--pf-border)] bg-[var(--pf-surface)] px-2 xl:mx-5 xl:mt-[31px] xl:rounded-[9px] xl:border">

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, Sparkle } from './Icons';
 
 const FAQS = [
-    { q: 'How do I create an account?', a: 'Click Register in the top navigation, enter your name, email and a strong password, or sign up instantly with Google. Your welcome bonus is credited automatically.' },
+    { q: 'How do I create an account?', a: 'Click Register in the top navigation, enter your name, phone number or username and a strong password, or sign up instantly with Telegram. Your welcome bonus is credited automatically.' },
     { q: 'How fast are withdrawals?', a: 'Crypto withdrawals are processed within minutes. Card and bank transfers typically settle within 1-3 business days depending on your provider.' },
     { q: 'Is my account secure?', a: 'Yes. We use industry-standard encryption, optional two-factor authentication, and never store your card details on our servers.' },
     { q: 'What is the welcome bonus?', a: 'New players receive a 200% deposit match up to $1,000 plus 100 free spins on selected slots. Terms and wagering requirements apply.' },

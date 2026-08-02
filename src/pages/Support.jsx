@@ -77,7 +77,7 @@ export default function Support() {
     const toast = useToast();
 
     const [email, setEmail] = useState(() => {
-        try { return user?.email || localStorage.getItem(EMAIL_KEY) || ''; } catch { return user?.email || ''; }
+        try { return user?.accountId || localStorage.getItem(EMAIL_KEY) || ''; } catch { return user?.accountId || ''; }
     });
     const [emailInput, setEmailInput] = useState('');
     const [view, setView] = useState('list');
@@ -87,10 +87,10 @@ export default function Support() {
     const [form, setForm] = useState({ name: '', email: '', subject: '', description: '', category: 'general', priority: 'medium' });
 
     useEffect(() => {
-        if (!user?.email) return;
-        setEmail(user.email);
-        try { localStorage.setItem(EMAIL_KEY, user.email); } catch { /* ignore */ }
-        setForm((current) => ({ ...current, name: current.name || user.name || '', email: user.email }));
+        if (!user?.accountId) return;
+        setEmail(user.accountId);
+        try { localStorage.setItem(EMAIL_KEY, user.accountId); } catch { /* ignore */ }
+        setForm((current) => ({ ...current, name: current.name || user.name || '', email: user.accountId }));
     }, [user]);
 
     useEffect(() => { setTickets(listTickets(email)); }, [email]);
@@ -123,7 +123,7 @@ export default function Support() {
 
     const identify = (fromEvent) => {
         fromEvent.preventDefault();
-        if (!emailInput.includes('@')) return;
+        if (!emailInput.trim()) return;
         try { localStorage.setItem(EMAIL_KEY, emailInput); } catch { /* ignore */ }
         setEmail(emailInput);
     };
@@ -195,8 +195,8 @@ export default function Support() {
                             <Field label="Full name">
                                 <input className={inputClass} required value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} placeholder="Ada Obi" />
                             </Field>
-                            <Field label="Email">
-                                <input className={inputClass} required type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} placeholder="you@example.com" />
+                            <Field label="Email or phone">
+                                <input className={inputClass} required value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} placeholder="you@example.com or 09xx xxx xxx" />
                             </Field>
                         </div>
                         <Field label="Subject">
@@ -230,9 +230,9 @@ export default function Support() {
                             <form className="animate-fade-up rounded-[14px] border border-[var(--pf-border)] bg-[var(--pf-surface)] p-6 text-center" onSubmit={identify}>
                                 <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[var(--pf-panel)] text-[var(--pf-accent)]"><UiIcon name="results" className="size-6" /></span>
                                 <h2 className="mt-3 text-[16px] font-black">Find your tickets</h2>
-                                <p className="mt-1 text-[13px] text-[var(--pf-muted)]">Enter the email you used when contacting us.</p>
+                                <p className="mt-1 text-[13px] text-[var(--pf-muted)]">Enter the email or phone you used when contacting us.</p>
                                 <div className="mx-auto mt-4 flex max-w-sm gap-2">
-                                    <input className={inputClass} type="email" value={emailInput} onChange={(event) => setEmailInput(event.target.value)} placeholder="you@example.com" />
+                                    <input className={inputClass} value={emailInput} onChange={(event) => setEmailInput(event.target.value)} placeholder="you@example.com or 09xx xxx xxx" />
                                     <button className="grid size-[46px] shrink-0 place-items-center rounded-[10px] border-0 bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] transition active:scale-90" type="submit" aria-label="Find tickets"><UiIcon name="search" /></button>
                                 </div>
                             </form>

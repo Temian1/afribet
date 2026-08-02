@@ -56,7 +56,7 @@ function Brand({ compact = false }) {
             <svg className={`${compact ? 'size-[18px]' : 'size-7'} transition-transform duration-500 group-hover:rotate-180`} viewBox="0 0 32 32" fill="none" aria-hidden="true">
                 <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="2" />
                 <path d="M16 3 20 10l8 1-6 6 2 8-8-4-8 4 2-8-6-6 8-1Z" fill="currentColor" fillOpacity=".9" />
-                <circle cx="16" cy="16" r="4" fill="#071226" />
+                <circle cx="16" cy="16" r="4" fill="var(--pf-surface)" />
             </svg>
             <span className={`relative font-semibold leading-none tracking-[-1px] ${compact ? 'text-[19px]' : 'text-[30px]'}`}>
                 AFRIBET
