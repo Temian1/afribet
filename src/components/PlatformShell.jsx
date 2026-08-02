@@ -9,6 +9,7 @@ import SearchModal from './SearchModal';
 import RewardWheel from './RewardWheel';
 import ThemeToggle from './ThemeToggle';
 import { SportIcon, UiIcon } from './SportIcons';
+import Brand from './Brand';
 
 /* Primary nav shown in the header on both breakpoints. `short` is the mobile
    label; `badge` renders the NEW pill. */
@@ -24,15 +25,6 @@ const NAV_LINKS = [
 export function PlatformIcon({ name, className = 'size-5', strokeWidth = 1.9 }) {
     if (name === 'ball') return <SportIcon type="football" className={className} strokeWidth={strokeWidth} />;
     return <UiIcon name={name} className={className} strokeWidth={strokeWidth} />;
-}
-
-function Brand({ compact = false, onClick }) {
-    return (
-        <button className="group inline-flex shrink-0 items-baseline border-0 bg-transparent" onClick={onClick} type="button" aria-label="Afribet home">
-            <span className={`font-display font-black italic leading-none tracking-[-1px] text-[var(--pf-text)] ${compact ? 'text-[22px]' : 'text-[28px]'}`}>afri</span>
-            <span className={`font-display font-black italic leading-none tracking-[-1px] text-[var(--pf-accent)] ${compact ? 'text-[22px]' : 'text-[28px]'}`}>bet</span>
-        </button>
-    );
 }
 
 /* Balance chip — mirrors the reference's "0.00 ETB / ID: —". */
@@ -101,7 +93,7 @@ function MobileHeader({ page, go, user, balance, openAuth, openSearch, openMenu,
                 <button className="grid size-9 shrink-0 place-items-center border-0 bg-transparent text-[var(--pf-text)] transition hover:text-[var(--pf-accent)] active:scale-90" onClick={openMenu} type="button" aria-label="Open menu">
                     <UiIcon name="menu" className="size-6" />
                 </button>
-                <Brand compact onClick={() => go('home')} />
+                <Brand size="md" onClick={() => go('home')} />
                 <button className="grid size-9 shrink-0 place-items-center border-0 bg-transparent text-[var(--pf-text)] transition hover:text-[var(--pf-accent)] active:scale-90" onClick={openSearch} type="button" aria-label="Search">
                     <UiIcon name="search" className="size-[21px]" />
                 </button>
@@ -130,7 +122,7 @@ function DesktopChrome({ page, go, user, balance, openAuth, openSearch, openMenu
                 <button className="grid size-10 shrink-0 place-items-center rounded-[10px] border-0 bg-transparent text-[var(--pf-text)] transition hover:text-[var(--pf-accent)]" onClick={openMenu} type="button" aria-label="Open menu">
                     <UiIcon name="menu" className="size-6" />
                 </button>
-                <Brand onClick={() => go('home')} />
+                <Brand size="lg" onClick={() => go('home')} />
 
                 <button
                     className="ml-2 flex h-[42px] w-full max-w-[420px] items-center gap-2 rounded-[10px] border border-[var(--pf-border)] bg-[var(--pf-input)] px-4 text-left text-[14px] text-[var(--pf-faint)] transition hover:border-[var(--pf-accent)]/40"

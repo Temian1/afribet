@@ -4,6 +4,7 @@ import { useBetSlip } from '../contexts/BetSlipContext';
 import { THUMBS } from '../games/thumbnails';
 import { BrandDiscord, BrandFacebook, BrandInstagram, BrandTelegram, BrandX } from '../components/Icons';
 import { SportIcon, TeamCrest, UiIcon } from '../components/SportIcons';
+import Brand from '../components/Brand';
 import { TOP_EVENTS } from '../data/sportsData';
 
 const WINNERS = [
@@ -84,22 +85,6 @@ const ART_LABELS = {
     bingo: ['★', 'BINGO', 'STAR'],
     coins: ['◉', '3 COINS', 'FORTUNE'],
 };
-
-function Brand({ compact = false }) {
-    return (
-        <span className="inline-flex items-center text-[var(--pf-accent)]">
-            <svg className={`${compact ? 'size-[18px]' : 'size-7'} shrink-0`} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="2" />
-                <path d="M16 3 20 10l8 1-6 6 2 8-8-4-8 4 2-8-6-6 8-1Z" fill="currentColor" fillOpacity=".9" />
-                <circle cx="16" cy="16" r="4" fill="var(--pf-surface)" />
-            </svg>
-            <span className={`relative font-semibold leading-none tracking-[-1px] ${compact ? 'text-[21px]' : 'text-[31px]'}`}>
-                AFRIBET
-                <small className={`absolute right-0 font-extrabold tracking-normal ${compact ? 'top-[18px] text-[7px]' : 'top-[27px] text-[10px]'}`}>BET</small>
-            </span>
-        </span>
-    );
-}
 
 function WinnerArt({ type }) {
     const [icon, first, second] = ART_LABELS[type];
@@ -263,7 +248,7 @@ function HomeFooter({ go }) {
     return (
         <footer className="order-6 mx-1 mt-8 border-t border-[var(--pf-border)] pb-8 pt-5 text-[var(--pf-muted)] xl:mx-0 xl:mt-10">
             <div className="flex items-center justify-between gap-4">
-                <Brand compact />
+                <Brand size="lg" onClick={() => go('home')} />
                 <div className="flex gap-2">
                     {socials.map(([label, Icon]) => (
                         <a className="grid size-8 place-items-center rounded-full bg-[var(--pf-card)] text-white transition hover:bg-[var(--pf-accent)] hover:text-[var(--pf-accent-ink)]" href="#" aria-label={label} key={label}>

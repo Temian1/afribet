@@ -3,6 +3,7 @@ import { isPhone, useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { ArrowLeft, BrandTelegram, Check, Eye, EyeOff, Lock, X } from './Icons';
 import { UiIcon } from './SportIcons';
+import Brand from './Brand';
 import Portal from './Portal';
 
 const TELEGRAM_BLUE = '#229ED9';
@@ -143,6 +144,7 @@ export default function AuthModal({ open, initialMode = 'login', onClose }) {
                             </button>
                         ) : null}
 
+                        <Brand size="lg" className="mb-3" />
                         <h2 className="text-[24px] font-black tracking-tight text-[var(--pf-text)]">{titles[mode]}</h2>
                         <p className="mb-4 mt-1 text-sm text-[var(--pf-muted)]">Sign in with your phone number or username.</p>
 

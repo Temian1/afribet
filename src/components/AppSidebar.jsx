@@ -5,6 +5,7 @@ import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Moon, Sun } from './Icons';
+import Brand from './Brand';
 import { MENU_SECTIONS, QUICK_TILES } from '../data/menu';
 
 function MenuIcon({ name, className }) {
@@ -43,16 +44,7 @@ export default function AppSidebar({ open, onClose, onNavigate, onOpenAuth }) {
 
                 <aside className="app-drawer absolute inset-y-0 left-0 flex w-[85%] max-w-[340px] flex-col border-r border-[var(--pf-border)] bg-[var(--pf-card)] text-[var(--pf-text)] shadow-2xl">
                     <header className="flex h-[62px] shrink-0 items-center gap-2 border-b border-[var(--pf-border)] px-4">
-                        <span className="inline-flex items-center text-[var(--pf-accent)]">
-                            <svg className="size-6 shrink-0" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                                <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="2" />
-                                <path d="M16 3 20 10l8 1-6 6 2 8-8-4-8 4 2-8-6-6 8-1Z" fill="currentColor" fillOpacity=".9" />
-                                <circle cx="16" cy="16" r="4" className="fill-white" />
-                            </svg>
-                            <span className="relative ml-0.5 text-[21px] font-semibold leading-none tracking-[-1px]">
-                                AFRIBET<small className="absolute right-0 top-[15px] text-[6px] font-extrabold tracking-normal">BET</small>
-                            </span>
-                        </span>
+                        <Brand size="md" onClick={() => go('home')} />
                         <button className="ml-auto grid size-9 shrink-0 place-items-center rounded-full border-0 bg-[var(--pf-panel)] text-[var(--pf-text)] transition hover:bg-[var(--pf-hover)] active:scale-90" onClick={onClose} type="button" aria-label="Close menu">
                             <UiIcon name="close" className="size-5" />
                         </button>
