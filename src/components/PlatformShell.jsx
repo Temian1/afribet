@@ -66,9 +66,44 @@ function Brand({ compact = false }) {
     );
 }
 
-function MobileHeader({ page, go, user, openAuth, openQuickMenu, openSearch }) {
-    const showCategoryRail = page !== 'sports';
+/* The primary nav rides in the header rather than a fixed bottom bar. The
+   category shortcuts it replaced stay reachable from the quick-access sheet. */
+function MobileNavRow({ page, go, betCount, openBetSlip, openMenu, menuOpen, openQuickMenu }) {
+    return (
+        <div className="relative flex h-[52px] items-stretch border-t border-[var(--pf-border)] bg-[var(--pf-surface)]/95 backdrop-blur-xl">
+            <nav className="no-scrollbar flex flex-1 items-stretch overflow-x-auto pr-[52px]" aria-label="Primary navigation">
+                {BOTTOM_ITEMS.map(([target, label, icon]) => {
+                    const active = target === 'menu' ? menuOpen : page === target;
+                    const onClick = () => {
+                        if (target === 'menu') return openMenu();
+                        if (label === 'Bet slip') return openBetSlip();
+                        return go(target);
+                    };
+                    return (
+                        <button
+                            className={`group relative flex min-w-[62px] flex-1 flex-col items-center justify-center gap-0.5 border-0 bg-transparent px-1 text-[10px] font-bold transition ${active ? 'text-[var(--pf-accent)]' : 'text-[var(--pf-text)]'}`}
+                            onClick={onClick}
+                            type="button"
+                            key={label}
+                        >
+                            <PlatformIcon name={icon} className={`size-[20px] transition-transform group-active:scale-75 ${active ? '-translate-y-0.5' : ''}`} />
+                            <span className="truncate">{label}</span>
+                            {label === 'Bet slip' && betCount > 0 ? <i className="absolute right-2 top-1 h-4 min-w-4 rounded-full bg-[var(--pf-danger)] px-1 text-[10px] not-italic leading-4 text-white">{betCount}</i> : null}
+                            {active ? <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-[var(--pf-accent)] shadow-[0_0_10px_var(--pf-accent)]" /> : null}
+                        </button>
+                    );
+                })}
+            </nav>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center bg-gradient-to-l from-[var(--pf-surface)] via-[var(--pf-surface)] to-transparent pl-5 pr-2">
+                <button className="pointer-events-auto grid size-10 min-w-10 place-items-center rounded-[16px] border-0 bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[0_0_22px_rgba(57,245,173,.22)] transition hover:rotate-90 active:scale-90" onClick={openQuickMenu} type="button" aria-label="Open quick access menu">
+                    <UiIcon name="grid" className="size-5" />
+                </button>
+            </div>
+        </div>
+    );
+}
 
+function MobileHeader({ page, go, user, openAuth, openQuickMenu, openSearch, betCount, openBetSlip, openMenu, menuOpen }) {
     return (
         <header className="fixed inset-x-0 top-0 z-50 xl:hidden">
             <div className="flex h-[61px] items-center bg-[var(--pf-surface)]/95 px-2.5 backdrop-blur-xl">
@@ -86,17 +121,7 @@ function MobileHeader({ page, go, user, openAuth, openQuickMenu, openSearch }) {
                     )}
                 </div>
             </div>
-            {showCategoryRail ? <div className="relative h-12 bg-[var(--pf-surface)]/95 pb-1 backdrop-blur-xl">
-                <nav className="no-scrollbar flex h-full gap-2 overflow-x-auto px-3 pr-[64px]" aria-label="Game categories">
-                    <button className={`platform-category ${page === 'sports' ? 'ring-2 ring-white/60' : ''} bg-[#18aa58]`} onClick={() => go('sports')} type="button"><SportIcon type="football" className="size-4" />Sports</button>
-                    <button className={`platform-category ${page === 'casino' ? 'ring-2 ring-white/60' : ''} bg-[#b85118]`} onClick={() => go('casino')} type="button"><UiIcon name="slots" className="size-4" />Slots</button>
-                    <button className="platform-category min-w-[129px] bg-gradient-to-r from-[#8d2700] to-[#3e150e]" onClick={() => go('casino')} type="button"><UiIcon name="casino" className="size-4" />Live Casino</button>
-                    <button className="platform-category min-w-[110px] bg-gradient-to-r from-[#123b7a] to-[#0b1f45]" onClick={() => go('promotions')} type="button"><UiIcon name="gift" className="size-4" />Bonuses</button>
-                </nav>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-start bg-gradient-to-l from-[var(--pf-header-to)] via-[var(--pf-header-to)] to-transparent pl-5 pr-2">
-                    <button className="pointer-events-auto grid size-11 min-w-11 place-items-center rounded-[18px] border-0 bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[0_0_26px_rgba(57,245,173,.22)] transition hover:rotate-90 active:scale-90" onClick={openQuickMenu} type="button" aria-label="Open quick access menu"><UiIcon name="grid" className="size-6" /></button>
-                </div>
-            </div> : null}
+            <MobileNavRow page={page} go={go} betCount={betCount} openBetSlip={openBetSlip} openMenu={openMenu} menuOpen={menuOpen} openQuickMenu={openQuickMenu} />
         </header>
     );
 }
@@ -213,29 +238,6 @@ function DesktopChrome({ page, go, user, openAuth, openSearch, openMenu }) {
     );
 }
 
-function BottomNav({ page, go, betCount, openBetSlip, openMenu, menuOpen }) {
-    return (
-        <nav className="fixed inset-x-0 bottom-0 z-50 grid h-[63px] grid-cols-6 border-t-2 border-[var(--pf-border)] bg-[var(--pf-surface)]/95 backdrop-blur-xl xl:hidden" aria-label="Bottom navigation">
-            {BOTTOM_ITEMS.map(([target, label, icon]) => {
-                const active = target === 'menu' ? menuOpen : page === target;
-                const onClick = () => {
-                    if (target === 'menu') return openMenu();
-                    if (label === 'Bet slip') return openBetSlip();
-                    return go(target);
-                };
-                return (
-                    <button className={`group relative flex flex-col items-center justify-center gap-0.5 border-0 bg-transparent text-[10px] font-bold transition ${active ? 'text-[var(--pf-accent)]' : 'text-[var(--pf-text)]'}`} onClick={onClick} type="button" key={label}>
-                        {active ? <span className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-[var(--pf-accent)] shadow-[0_0_10px_#39f5ad]" /> : null}
-                        <PlatformIcon name={icon} className={`size-[22px] transition-transform group-active:scale-75 ${active ? '-translate-y-0.5' : ''}`} />
-                        {label}
-                        {label === 'Bet slip' && betCount > 0 ? <i className="absolute left-1/2 top-1 h-4 min-w-4 rounded-full bg-[var(--pf-danger)] px-1 text-[10px] not-italic text-white">{betCount}</i> : null}
-                    </button>
-                );
-            })}
-        </nav>
-    );
-}
-
 export default function PlatformShell({ children }) {
     const { page, setPage, setCurrentEvent, setCurrentGame } = useApp();
     const { user } = useAuth();
@@ -258,19 +260,29 @@ export default function PlatformShell({ children }) {
 
     return (
         <div className="platform-shell min-h-screen overflow-x-hidden bg-[var(--pf-bg)] text-slate-100">
-            <MobileHeader page={page} go={go} user={user} openAuth={openAuth} openQuickMenu={() => setQuickMenuOpen(true)} openSearch={() => setSearchOpen(true)} />
+            <MobileHeader
+                page={page}
+                go={go}
+                user={user}
+                openAuth={openAuth}
+                openQuickMenu={() => setQuickMenuOpen(true)}
+                openSearch={() => setSearchOpen(true)}
+                betCount={betItems.length}
+                openBetSlip={() => betItems.length ? setBetSlipOpen(true) : go('sports')}
+                openMenu={() => setMenuOpen(true)}
+                menuOpen={menuOpen}
+            />
             <MobileQuickMenu open={quickMenuOpen} closeMenu={() => setQuickMenuOpen(false)} go={go} />
             <AppSidebar open={menuOpen} onClose={() => setMenuOpen(false)} onNavigate={go} onOpenAuth={openAuth} />
             <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={go} onOpenGame={openGame} />
             <DesktopChrome page={page} go={go} user={user} openAuth={openAuth} openSearch={() => setSearchOpen(true)} openMenu={() => setMenuOpen(true)} />
-            <div className={`platform-content relative min-h-screen pb-[63px] xl:ml-[264px] xl:pb-0 xl:pt-[74px] ${page === 'sports' ? 'pt-[61px]' : 'pt-[109px]'}`}>
+            <div className="platform-content relative min-h-screen pt-[113px] xl:ml-[264px] xl:pt-[74px]">
                 <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden xl:left-[264px]" aria-hidden="true">
                     <div className="absolute -right-32 top-20 size-[420px] rounded-full bg-[var(--pf-accent)]/[.035] blur-[100px]" />
                     <div className="absolute -left-32 bottom-10 size-[360px] rounded-full bg-blue-500/[.035] blur-[100px]" />
                 </div>
                 <div className="platform-page-enter relative z-[1]" key={page}>{children}</div>
             </div>
-            <BottomNav page={page} go={go} betCount={betItems.length} openBetSlip={() => betItems.length ? setBetSlipOpen(true) : go('sports')} openMenu={() => setMenuOpen(true)} menuOpen={menuOpen} />
             <BetSlip onLogin={() => openAuth('login')} />
             <AuthModal open={auth.open} initialMode={auth.mode} onClose={() => setAuth((current) => ({ ...current, open: false }))} />
         </div>

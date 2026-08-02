@@ -296,7 +296,7 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen overflow-hidden bg-[var(--pf-bg)] pb-[63px] text-[var(--pf-text)] xl:pb-0">
+        <div className="min-h-screen overflow-hidden bg-[var(--pf-bg)] text-[var(--pf-text)]">
             <main className="flex min-h-screen flex-col xl:px-[23px] xl:pb-7 xl:pt-[68px]">
                 <WinnerRail />
 

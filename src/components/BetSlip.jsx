@@ -135,7 +135,7 @@ export default function BetSlip({ onLogin }) {
             {/* Slip panel */}
             {open && (
                 <aside
-                    className="animate-fade-up fixed inset-x-0 bottom-[63px] z-[1300] flex max-h-[80vh] flex-col overflow-hidden rounded-t-3xl border border-[var(--pf-accent)]/20 bg-ink-2 shadow-[0_-20px_60px_rgba(0,0,0,.45),0_0_40px_rgba(57,245,173,.06)] sm:inset-x-auto sm:left-6 sm:w-[380px] sm:rounded-3xl xl:bottom-6"
+                    className="animate-fade-up fixed inset-x-0 bottom-0 z-[1300] flex max-h-[80vh] flex-col overflow-hidden rounded-t-3xl border border-[var(--pf-accent)]/20 bg-ink-2 shadow-[0_-20px_60px_rgba(0,0,0,.45),0_0_40px_rgba(57,245,173,.06)] sm:inset-x-auto sm:left-6 sm:w-[380px] sm:rounded-3xl xl:bottom-6"
                     aria-label="Bet slip"
                 >
                     <header className="flex items-center justify-between border-b border-[var(--pf-border)] px-5 py-3.5">

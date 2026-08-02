@@ -158,7 +158,7 @@ export default function Support() {
             </header>
 
             <div className="mx-auto max-w-4xl px-4 sm:px-6">
-                <nav className="no-scrollbar sticky top-[61px] z-20 -mx-4 flex gap-1.5 overflow-x-auto bg-[#030810]/95 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6 xl:top-[74px]" aria-label="Support views">
+                <nav className="no-scrollbar sticky top-[113px] z-20 -mx-4 flex gap-1.5 overflow-x-auto bg-[var(--pf-bg)]/95 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6 xl:top-[74px]" aria-label="Support views">
                     {[['list', 'My tickets'], ['new', 'New ticket'], ['faq', 'FAQ']].map(([id, label]) => (
                         <button
                             className={`h-9 shrink-0 rounded-[18px] border-0 px-4 text-[12px] font-bold transition active:scale-95 ${view === id ? 'bg-[var(--pf-accent)] text-[var(--pf-accent-ink)] shadow-[0_0_20px_rgba(57,245,173,.25)]' : 'bg-[var(--pf-panel)] text-[var(--pf-text)] hover:bg-[var(--pf-hover)]'}`}

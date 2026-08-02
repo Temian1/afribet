@@ -161,7 +161,7 @@ export default function EventDetail() {
                 </span>
             </header>
 
-            <div className="sticky top-[61px] z-20 mt-2.5 flex items-center gap-2 bg-[var(--pf-bg)]/95 px-3 py-2.5 backdrop-blur-xl sm:px-4 xl:top-[74px]">
+            <div className="sticky top-[113px] z-20 mt-2.5 flex items-center gap-2 bg-[var(--pf-bg)]/95 px-3 py-2.5 backdrop-blur-xl sm:px-4 xl:top-[74px]">
                 <button className="order-2 grid size-9 shrink-0 place-items-center rounded-full border-0 bg-[var(--pf-panel)] text-[var(--pf-text)] transition hover:text-[var(--pf-accent)] active:scale-90 xl:order-1" onClick={() => setSearchOpen((value) => !value)} type="button" aria-label="Search markets" aria-expanded={searchOpen}>
                     <UiIcon name="search" className="size-[18px]" />
                 </button>
